@@ -1,0 +1,42 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "enabled": true,
+      "headers": {
+        "CONTEXT7_API_KEY": "YOUR_CONTEXT7_API_KEY_HERE"
+      },
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    }
+  },
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "Clear-Item*": "ask",
+      "Move-Item*": "ask",
+      "Remove-Item*": "ask",
+      "del *": "ask",
+      "git clean*": "ask",
+      "git reset --hard*": "ask",
+      "rd *": "ask",
+      "rm *": "ask",
+      "rmdir *": "ask"
+    }
+  },
+  "provider": {
+    "my-provider": {
+      "models": {
+        "my-model": {
+          "name": "My Model"
+        }
+      },
+      "name": "My Provider",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "apiKey": "YOUR_API_KEY_HERE",
+        "baseURL": "https://your-api-endpoint.example.com/v1"
+      }
+    }
+  }
+}
