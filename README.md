@@ -70,7 +70,7 @@ cp opencode.json.example ~/.config/opencode/opencode.json
 2. 完成后 opencode 会把这次的经验写成 `.opencode/skills/{名称}/SKILL.md` 并登记进 `INDEX.md`。
 3. 下次遇到类似问题，它自动调用技能，越用越快、越用越准。
 
-> 提示：技能会同时写入「全局 `~/.config/opencode/skills/`」和「项目 `.opencode/skills/`」。全局技能所有项目可用；项目技能仅该项目可用。默认建议全局沉淀。
+> 提示：技能**默认建在当前项目** `.opencode/skills/`（只对该项目生效）；仅当它是「通用纪律/红线/跨语言平台」或「已在 2+ 个互不相干项目复用」时，才**提升到全局** `~/.config/opencode/skills/`。项目专属踩坑（某项目的库/构建链/脚本）禁止进全局，以免污染所有项目的上下文。
 
 ## 四个核心技能
 

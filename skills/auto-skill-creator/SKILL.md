@@ -49,10 +49,20 @@ What this skill does and when to use it.
 
 ## Skill Storage Convention
 
-- Location: `.opencode/skills/{skill-name}/SKILL.md`
+- 默认位置（**项目级**）：`<project>/.opencode/skills/{skill-name}/SKILL.md` — 绝大多数技能放这里，只对该项目生效。
+- 全局位置：`~/.config/opencode/skills/{skill-name}/SKILL.md` — 仅极少数通用技能放这里，对所有项目生效。
 - Naming: kebab-case, descriptive
 - One skill per directory
 - Keep it focused — one skill = one purpose
+
+### 全局 vs 项目级 分流规则（铁律）
+
+- **默认项目级**：技能建在「学到它的当前项目」`.opencode/skills/`。项目专属的踩坑（某项目的库/构建链/脚本/产品特性）**绝不允许**进全局——会污染所有项目的上下文、稀释触发精度。
+- **提升到全局**仅当满足其一：
+  - 通用纪律 / 红线 / 跨语言平台规则（如编码安全、质量底线、分阶段规范）
+  - 已在 **2+ 个互不相干**的项目实际复用
+- **恒全局**：元技能（auto-skill-creator 本身）与 always-on 纪律。
+- **迁移**：发现全局目录里有项目专属技能时，移到对应项目 `.opencode/skills/`，并同步全局 INDEX 与该项目 INDEX。
 
 ## Auto-Indexing
 
@@ -94,5 +104,5 @@ Beyond staleness, verify skills don't conflict with each other. Three levels:
 | L3 指令矛盾 | One skill's red lines contradict another's (e.g. example uses a forbidden command) | `rg "禁止\|一律\|必须\|不得"` to extract red lines, manually scan for opposing pairs |
 
 Known L3 hotspots and the correct resolution:
-- 编码红线：example commands must use Write/Edit or `[System.IO.File]::WriteAllText`, never `Set-Content`/`Out-File`/`>` (see powershell-utf8-safety). `.vbs` files are the explicit exception (must be GBK/ANSI, see vbs-launch-script-debug).
+- 编码红线：example commands must use Write/Edit or `[System.IO.File]::WriteAllText`, never `Set-Content`/`Out-File`/`>` (see powershell-utf8-safety). `.vbs` files are the explicit exception (must be GBK/ANSI).
 - 图标/样式：no emoji icons, no icon+text mixing, no inline style / hardcoded color (see quality-baseline + project AGENTS.md 前端样式规范).

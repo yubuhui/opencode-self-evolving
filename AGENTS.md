@@ -20,6 +20,8 @@ Create a new skill in `.opencode/skills/{name}/SKILL.md` whenever:
 2. Create `.opencode/skills/{kebab-case-name}/SKILL.md` following SKILL.md format
 3. Update `.opencode/skills/INDEX.md` with the new entry
 
+> **位置分流（铁律）**：默认建在当前项目的 `.opencode/skills/`。只有「通用纪律/红线/跨语言平台」或「已在 2+ 个互不相干项目复用」的技能，才提升到全局 `~/.config/opencode/skills/`。项目专属踩坑（某项目的库/构建链/脚本）禁止进全局。
+
 ### Skill format
 
 ```markdown
