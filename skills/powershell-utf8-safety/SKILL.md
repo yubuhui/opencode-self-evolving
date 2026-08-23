@@ -7,7 +7,7 @@ description: "写/改含中文文本文件一律用 Write/Edit 工具（UTF-8）
 
 ## 事故背景
 
-在中文 Windows（系统 ANSI 编码 = GBK）上，PowerShell 5.1 的文本读写命令默认按 **ANSI(GBK)** 处理。用它改写含中文的 UTF-8 文件会把中文变成乱码（如 `鎺掑簭`、`锟斤拷`、U+FFFD），且不可逆——曾因此损坏真实项目文件，需 `git checkout` 恢复后逐条重放全部改动。
+在中文 Windows（系统 ANSI 编码 = GBK）上，PowerShell 5.1 的文本读写命令默认按 **ANSI(GBK)** 处理。用它改写含中文的 UTF-8 文件会把中文变成乱码（如 `鎺掑簭`、`锟斤拷`、`U+FFFD`），且不可逆——曾因此损坏真实项目文件，需 `git checkout` 恢复后逐条重放全部改动。
 
 ## 行为规范
 

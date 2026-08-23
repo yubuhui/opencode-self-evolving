@@ -83,7 +83,7 @@ Skills go stale when the codebase moves. After a round of feature add/fix, check
 | Page/module/lib/route added, renamed, or deleted | AGENTS.md file listings + architecture skills (e.g. file-management-architecture, embedded-doc-editor) reference the new paths |
 | Commands/build steps/ports/config changed | Skills recording them (offline-installer-build, lawyer-theme-color, headless-page-smoke-test) still accurate |
 | Architecture/conventions/red lines changed | Corresponding skills + project AGENTS.md / AI-开发规范.md references |
-| New pitfall/command/pattern learned | Even if no skill is stale, record it (don't skip because "skill exists") |
+| New pitfall/command/pattern learned | Even if no skill is stale, record it even when a similar skill already exists |
 
 ## Skill Update Workflow
 
@@ -95,7 +95,7 @@ Skills go stale when the codebase moves. After a round of feature add/fix, check
 
 ## Skill Conflict Detection
 
-Beyond staleness, verify skills don't conflict with each other. Three levels:
+Beyond staleness, verify skills stay conflict-free with each other. Three levels:
 
 | Level | Check | Method |
 |-------|-------|--------|
