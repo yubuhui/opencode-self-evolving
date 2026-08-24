@@ -30,11 +30,13 @@ jobs:
         run: |
           export HOME="$RUNNER_TEMP/kit-home"
           bash install.sh
-          test -f "$HOME/.config/opencode/AGENTS.md"
-          test -d "$HOME/.config/opencode/skills/auto-skill-creator"
-          test -d "$HOME/.config/opencode/skills/plan-review"
-          test -f "$HOME/.config/opencode/check-rules.mjs"
-          test -f "$HOME/.config/opencode/package.json"
-          test -f "$HOME/.config/opencode/opencode.json"
+          echo "--- installed tree ---"
+          find "$HOME/.config/opencode" -maxdepth 2 2>&1 | sort
+          for f in AGENTS.md check-rules.mjs package.json opencode.json; do
+            test -f "$HOME/.config/opencode/$f" && echo "OK $f" || { echo "MISSING FILE $f"; exit 1; }
+          done
+          for d in auto-skill-creator plan-review; do
+            test -d "$HOME/.config/opencode/skills/$d" && echo "OK skills/$d" || { echo "MISSING DIR skills/$d"; exit 1; }
+          done
           echo "install.sh OK"
 
