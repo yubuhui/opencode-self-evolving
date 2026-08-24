@@ -1,5 +1,7 @@
 # OpenCode Self-Evolving System + Dev Standards
 
+[![CI](https://github.com/yubuhui/opencode-self-evolving/actions/workflows/ci.yml/badge.svg)](https://github.com/yubuhui/opencode-self-evolving/actions/workflows/ci.yml)
+
 > **English** · [中文](#中文)
 
 A configuration kit that turns [opencode](https://opencode.ai) into a **self-improving agent** with **built-in engineering standards**. Install it and opencode will:
