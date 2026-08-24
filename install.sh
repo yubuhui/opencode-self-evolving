@@ -32,10 +32,10 @@ cp "$SRC/check-rules.mjs" "$TARGET/check-rules.mjs"
 cp "$SRC/package.json" "$TARGET/package.json"
 echo "Installed self-check tooling (npm test)"
 
-# 4. opencode.json — never overwrite an existing config
+# 4. opencode.json — safety permission rules only; never overwrite an existing config
 if [ ! -f "$TARGET/opencode.json" ]; then
   cp "$SRC/opencode.json.example" "$TARGET/opencode.json"
-  echo "Created opencode.json — edit it to add your API key"
+  echo "Created opencode.json (safety permission rules). Your model/API key is managed by opencode itself — this kit does not touch it."
 else
   echo "Skipped opencode.json (already exists)"
 fi

@@ -30,15 +30,18 @@ flowchart LR
 
 ## Install
 
-**Install just the skills via [skills.sh](https://skills.sh) CLI (any OS):**
+**Install just the skills — open format, works with any agent** (e.g. opencode / Claude Code / Codex / Cursor):
 
 ```bash
+# opencode
 npx skills add yubuhui/opencode-self-evolving -a opencode -g
+# or any other agent (Claude Code, Codex, Cursor, ...)
+npx skills add yubuhui/opencode-self-evolving -a claude-code -a codex -a cursor -g
 ```
 
-> Note: `npx skills add` installs the reusable **skills only** (7 skills → `~/.config/opencode/skills/`). For the full kit — skills **plus** the AGENTS.md always-on discipline and the `npm test` self-check — use the one-line installer below.
+> The skills are plain `SKILL.md` files following the open [Agent Skills](https://agentskills.io) spec, so they work across agents. If you only want the skills, you don't need opencode at all.
 
-**One-line full kit (macOS / Linux):**
+**Full kit for opencode (skills + AGENTS.md discipline + safety permission rules):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
@@ -50,16 +53,7 @@ Windows (PowerShell):
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-macOS / Linux:
-
-```bash
-mkdir -p ~/.config/opencode
-cp AGENTS.md ~/.config/opencode/AGENTS.md
-cp -r skills ~/.config/opencode/skills
-cp opencode.json.example ~/.config/opencode/opencode.json
-```
-
-Fill in your API key in `opencode.json`, then **restart opencode**.
+The kit installs into `~/.config/opencode/` (AGENTS.md + skills + a minimal `opencode.json` with destructive-command safety rules). **Your model / API key is configured through opencode itself** (`opencode auth login` or your own provider setup) — **this kit never touches it**. Then **restart opencode**.
 
 ## Verify
 
@@ -120,15 +114,18 @@ opencode-self-evolving/
 
 ## 安装
 
-**只用 [skills.sh](https://skills.sh) CLI 装技能（任意系统）：**
+**只用技能（开放格式，任意 agent 都能用）：**
 
 ```bash
+# opencode
 npx skills add yubuhui/opencode-self-evolving -a opencode -g
+# 或其他 agent（Claude Code / Codex / Cursor …）
+npx skills add yubuhui/opencode-self-evolving -a claude-code -a codex -a cursor -g
 ```
 
-> 说明：`npx skills add` 只安装**技能本体**（7 个技能 → `~/.config/opencode/skills/`）。要装**完整套件**（技能 + AGENTS.md 常驻纪律 + `npm test` 自检工具），用下面的一行式安装。
+> 说明：这些技能是标准 `SKILL.md`（[Agent Skills](https://agentskills.io) 开放规范），跨 agent 通用。只想要技能的话，**不装 opencode 也能用**。
 
-**完整套件一行式（macOS / Linux）：**
+**完整套件（面向 opencode：技能 + AGENTS.md 纪律 + 安全权限规则）：**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
@@ -144,23 +141,9 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 1. 拷贝 `AGENTS.md`（已有则先备份为 `.bak-时间戳`）。
 2. 拷贝 `skills/` 到 `~/.config/opencode/skills/`。
 3. 安装自检工具（`check-rules.mjs` + `package.json`，`npm test` 可自检）。
-4. 若无 `opencode.json` 则从模板创建；**已有则跳过，不覆盖你的配置**。
+4. 若无 `opencode.json` 则创建（**仅安全权限规则**）；已有则跳过，不覆盖你的配置。
 
-### macOS / Linux（手动）
-
-```bash
-mkdir -p ~/.config/opencode
-cp AGENTS.md ~/.config/opencode/AGENTS.md
-cp -r skills ~/.config/opencode/skills
-# 首次配置：
-cp opencode.json.example ~/.config/opencode/opencode.json
-```
-
-### 填写你的 API Key
-
-`opencode.json` 里的 `YOUR_API_KEY_HERE` 必须替换成你自己的 key（OpenAI 兼容接口或任意 provider 均可），否则模型不可用。本仓库**不含任何真实密钥**。
-
-安装完成后**重启 opencode** 即生效。
+> **模型 / API key 由 opencode 自己配置**（`opencode auth login` 或你自己的 provider 设置），**本套件完全不涉及**。安装完成后**重启 opencode** 即生效。
 
 ## 体验「自我进化」
 

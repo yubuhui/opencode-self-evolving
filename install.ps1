@@ -35,11 +35,11 @@ Copy-Item -LiteralPath (Join-Path $repo "check-rules.mjs") -Destination (Join-Pa
 Copy-Item -LiteralPath (Join-Path $repo "package.json") -Destination (Join-Path $target "package.json") -Force
 Write-Host "已安装自检工具（npm test）"
 
-# 4. 配置文件模板（不会覆盖现有 opencode.json）
+# 4. 配置文件模板（仅安全权限规则，不会覆盖现有 opencode.json；模型/API key 由 opencode 自己管理）
 $cfg = Join-Path $target "opencode.json"
 if (-not (Test-Path -LiteralPath $cfg)) {
   Copy-Item -LiteralPath (Join-Path $repo "opencode.json.example") -Destination $cfg
-  Write-Host "已创建 opencode.json（请编辑填入你自己的 API Key）"
+  Write-Host "已创建 opencode.json（含安全权限规则）。模型/API key 由 opencode 自己管理，本套件不涉及。"
 } else {
   Write-Host "跳过 opencode.json（已存在，避免覆盖你的配置）"
 }
