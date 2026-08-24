@@ -1,6 +1,7 @@
 # OpenCode Self-Evolving System + Dev Standards
 
 [![CI](https://github.com/yubuhui/opencode-self-evolving/actions/workflows/ci.yml/badge.svg)](https://github.com/yubuhui/opencode-self-evolving/actions/workflows/ci.yml)
+[![skills.sh](https://skills.sh/b/yubuhui/opencode-self-evolving)](https://skills.sh/yubuhui/opencode-self-evolving)
 
 > **English** · [中文](#中文)
 
@@ -29,7 +30,15 @@ flowchart LR
 
 ## Install
 
-**One-line (macOS / Linux):**
+**Install just the skills via [skills.sh](https://skills.sh) CLI (any OS):**
+
+```bash
+npx skills add yubuhui/opencode-self-evolving -a opencode -g
+```
+
+> Note: `npx skills add` installs the reusable **skills only** (7 skills → `~/.config/opencode/skills/`). For the full kit — skills **plus** the AGENTS.md always-on discipline and the `npm test` self-check — use the one-line installer below.
+
+**One-line full kit (macOS / Linux):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
@@ -111,7 +120,15 @@ opencode-self-evolving/
 
 ## 安装
 
-**一行式（macOS / Linux）：**
+**只用 [skills.sh](https://skills.sh) CLI 装技能（任意系统）：**
+
+```bash
+npx skills add yubuhui/opencode-self-evolving -a opencode -g
+```
+
+> 说明：`npx skills add` 只安装**技能本体**（7 个技能 → `~/.config/opencode/skills/`）。要装**完整套件**（技能 + AGENTS.md 常驻纪律 + `npm test` 自检工具），用下面的一行式安装。
+
+**完整套件一行式（macOS / Linux）：**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
