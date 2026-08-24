@@ -19,3 +19,22 @@ jobs:
 
       - name: Run self-check
         run: npm test
+
+  test-install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run installer into sandbox HOME
+        run: |
+          export HOME="$RUNNER_TEMP/kit-home"
+          bash install.sh
+          test -f "$HOME/.config/opencode/AGENTS.md"
+          test -d "$HOME/.config/opencode/skills/auto-skill-creator"
+          test -d "$HOME/.config/opencode/skills/plan-review"
+          test -f "$HOME/.config/opencode/check-rules.mjs"
+          test -f "$HOME/.config/opencode/package.json"
+          test -f "$HOME/.config/opencode/opencode.json"
+          echo "install.sh OK"
+
