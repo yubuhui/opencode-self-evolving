@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "test": "node check-rules.mjs"
+  }
+}
