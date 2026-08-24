@@ -29,6 +29,7 @@ jobs:
       - name: Run installer into sandbox HOME
         run: |
           export HOME="$RUNNER_TEMP/kit-home"
+          export XDG_CONFIG_HOME="$HOME/.config"
           bash install.sh
           echo "--- installed tree ---"
           find "$HOME/.config/opencode" -maxdepth 2 2>&1 | sort
