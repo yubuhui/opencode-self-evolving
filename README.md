@@ -47,10 +47,10 @@ npx skills add yubuhui/opencode-self-evolving -a claude-code -a codex -a cursor 
 curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
 ```
 
-Windows (PowerShell):
+Windows (PowerShell) — one line, from anywhere:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1
+iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.ps1)
 ```
 
 The kit installs into `~/.config/opencode/` (AGENTS.md + skills + a minimal `opencode.json` with destructive-command safety rules). **Your model / API key is configured through opencode itself** (`opencode auth login` or your own provider setup) — **this kit never touches it**. Then **restart opencode**.
@@ -131,10 +131,10 @@ npx skills add yubuhui/opencode-self-evolving -a claude-code -a codex -a cursor 
 curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
 ```
 
-### Windows（PowerShell）
+### Windows（PowerShell）—— 一行式，任意目录都行
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1
+iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.ps1)
 ```
 
 脚本会：
