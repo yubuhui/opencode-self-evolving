@@ -27,6 +27,12 @@ flowchart LR
 
 ## Install
 
+**One-line (macOS / Linux):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
+```
+
 Windows (PowerShell):
 
 ```powershell
@@ -96,11 +102,18 @@ opencode-self-evolving/
 │   ├── white-bear-safe-rules/      # 规则写作：白熊安全三原则
 │   └── powershell-utf8-safety/     # 写文件编码安全（防中文乱码）
 ├── opencode.json.example           # 配置模板（密钥留空，需自己填）
+├── install.sh                      # macOS/Linux 一行式安装（curl | bash）
 ├── install.ps1                     # Windows 一键安装
 └── .gitignore
 ```
 
 ## 安装
+
+**一行式（macOS / Linux）：**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/install.sh | bash
+```
 
 ### Windows（PowerShell）
 
@@ -111,9 +124,10 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 脚本会：
 1. 拷贝 `AGENTS.md`（已有则先备份为 `.bak-时间戳`）。
 2. 拷贝 `skills/` 到 `~/.config/opencode/skills/`。
-3. 若无 `opencode.json` 则从模板创建；**已有则跳过，不覆盖你的配置**。
+3. 安装自检工具（`check-rules.mjs` + `package.json`，`npm test` 可自检）。
+4. 若无 `opencode.json` 则从模板创建；**已有则跳过，不覆盖你的配置**。
 
-### macOS / Linux
+### macOS / Linux（手动）
 
 ```bash
 mkdir -p ~/.config/opencode

@@ -30,7 +30,12 @@ if (Test-Path -LiteralPath $skillDst) {
 }
 Write-Host "已安装 skills/"
 
-# 3. 配置文件模板（不会覆盖现有 opencode.json）
+# 3. 自检工具（npm test 运行 check-rules.mjs）
+Copy-Item -LiteralPath (Join-Path $repo "check-rules.mjs") -Destination (Join-Path $target "check-rules.mjs") -Force
+Copy-Item -LiteralPath (Join-Path $repo "package.json") -Destination (Join-Path $target "package.json") -Force
+Write-Host "已安装自检工具（npm test）"
+
+# 4. 配置文件模板（不会覆盖现有 opencode.json）
 $cfg = Join-Path $target "opencode.json"
 if (-not (Test-Path -LiteralPath $cfg)) {
   Copy-Item -LiteralPath (Join-Path $repo "opencode.json.example") -Destination $cfg
