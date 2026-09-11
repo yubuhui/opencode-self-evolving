@@ -23,7 +23,7 @@ flowchart LR
   P -->|fail, max 2 rounds| P
   P -->|approved| E[phased-refactor-and-report<br/>implement → test → commit]
   E --> V[test-verification<br/>discover tests + completion gate]
-  V -->|all pass| D[Done + 4-element report]
+  V -->|all pass| D[Done + 5-element report]
   D --> L[auto-skill-creator<br/>learn → write skill → index]
   L --> T
 ```
@@ -159,7 +159,7 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 |------|------|
 | **auto-skill-creator** | 自我进化核心。何时建技能、怎么写、怎么同步过时技能、怎么检测冲突（索引一致/职责重叠/指令矛盾） |
 | **quality-baseline** | 五项质量底线：代码结构清晰 / 开发维护方便 / 界面外观统一 / 操作逻辑一致 / 动画效果合适。互相约束，禁止为单一项牺牲另一项 |
-| **phased-refactor-and-report** | 大型改造必须拆阶段（实现→测试→提交），失败可独立回滚；非平凡任务完成后必须报告 原状/计划/实际/偏差原因 |
+| **phased-refactor-and-report** | 大型改造必须拆阶段（实现→测试→提交），失败可独立回滚；非平凡任务完成后必须报告 原状/计划/实际/偏差原因/验收指引（用户界面操作步骤） |
 | **plan-review** | 大型/涉规范任务先由子代理出《开发计划》并落盘，主进程按硬清单复核通过才开工（退回重出上限 2 轮） |
 | **test-verification** | 先探测项目测试栈，把每阶段落到可执行验证命令；完成前跑受影响范围测试才算真完成（完成门禁） |
 | **white-bear-safe-rules** | 写规则/规范时遵循白熊安全三原则：禁令必配正面替代、行为指令与诊断信息分离、正面先行红线兜底 |
