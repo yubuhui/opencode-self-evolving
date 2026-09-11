@@ -1,8 +1,5 @@
 {
   "scripts": {
     "test": "node check-rules.mjs"
-  },
-  "dependencies": {
-    "@opencode-ai/plugin": "1.17.13"
   }
 }
