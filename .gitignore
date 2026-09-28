@@ -5,3 +5,8 @@ opencode.json
 tui.json
 *.jsonc
 plugin/
+
+# 本机配置与备份（可能含密码/密钥，不入库）
+service.json
+cli.json
+*.bak-*
