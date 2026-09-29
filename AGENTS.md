@@ -20,7 +20,7 @@ Create a new skill in `.opencode/skills/{name}/SKILL.md` whenever:
 2. Create `.opencode/skills/{kebab-case-name}/SKILL.md` following SKILL.md format
 3. Update `.opencode/skills/INDEX.md` with the new entry
 
-> **位置分流（铁律）**：默认建在当前项目的 `.opencode/skills/`。通用纪律/红线/跨语言平台规则，或已在 2+ 个互不相干项目复用的技能，提升到全局 `~/.config/opencode/skills/`；项目专属踩坑（某项目的库/构建链/脚本）留在项目级。
+> **位置分流（铁律）**：项目级目录按当前 agent 取——OpenCode 用 `<project>/.opencode/skills/`，DeepSeek Harness 用 `<project>/.dsh/skills/`。通用纪律/红线/跨语言平台规则，或已在 2+ 个互不相干项目复用的技能，提升到全局（OpenCode `~/.config/opencode/skills/`，DSH `~/.dsh/skills/`）；项目专属踩坑（某项目的库/构建链/脚本）留在项目级。两个 agent 的项目级目录互不相通，需要双端生效时各放一份并保持同步。
 
 ### Skill format
 

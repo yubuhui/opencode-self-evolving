@@ -10,3 +10,4 @@ plugin/
 service.json
 cli.json
 *.bak-*
+backup-*/

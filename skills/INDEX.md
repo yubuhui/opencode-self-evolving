@@ -3,8 +3,6 @@
 | Skill | Description |
 |-------|-------------|
 | auto-skill-creator | Meta-skill: automatically create, update, and de-conflict reusable skills from experience |
-| officecli-docx-pitfalls | officecli 生成 Word 报告踩坑：style=Heading1 静默失效改用 styleId、live TOC 易报「未找到目录项」改静态目录、PDF 用 Word COM 导出 |
-| opencode-proxy-network-error | 排查 opencode 报网络错误/必须开 VPN：service.json 的 HTTP_PROXY 注入 vs VPN 本地代理端口，用 --noproxy 直连测试判定供应商是否真需翻墙 |
 | opencode-share-kit | 将 opencode 自我进化/开发规范配置打包成可分享仓库（脱敏密钥 + 安装脚本 + README） |
 | phased-refactor-and-report | 大型改造分阶段实现/测试/git 提交 + 完成报告（原状/计划/实际/偏差原因/验收指引） |
 | plan-review | 大型任务先由子代理出《开发计划》落盘，主进程按硬清单复核通过才开工（不通过退回重出，上限2轮） |
