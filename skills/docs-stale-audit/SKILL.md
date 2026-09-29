@@ -1,6 +1,6 @@
 ---
 name: docs-stale-audit
-description: "文档/技能改动后的墓碑描述审计闭环：audit-docs.mjs 的 --changed/--staged 用法、高置信与复查候选判级、docs-audit:allow 豁免、修复流程。Triggers: 文档审计, 墓碑描述, 改动后审计, 过时描述, audit-docs, --changed, --staged, 复查候选, docs-audit:allow"
+description: "文档/技能改动后的墓碑描述审计闭环：audit-docs.mjs 的 --changed/--staged 用法、高置信与复查候选判级、docs-audit:allow 豁免、修复流程、git 钩子拦截。Triggers: 文档审计, 墓碑描述, 改动后审计, 过时描述, audit-docs, --changed, --staged, 复查候选, docs-audit:allow, 钩子拦截"
 ---
 
 # 文档墓碑描述审计（docs-current-state-only 闭环）
@@ -37,6 +37,14 @@ description: "文档/技能改动后的墓碑描述审计闭环：audit-docs.mjs
 1. **高置信命中**：优先删除墓碑句；该坑可能复发时改写为「曾经的坑 → 现修法」，把篇幅给「现在怎么做」。
 2. **复查候选**：逐条判断对当前代码有无操作/避坑价值——有（复发性坑）就写「怎么防」，没有就删。
 3. **确需保留旧形态词汇**（词表、迁移说明）：行内加 `docs-audit:allow`，并在完成报告中说明理由。
+
+## git 钩子（全局安装）
+
+- 本机 `core.hooksPath` 指向配置库 `git-hooks/`，每次 `git commit` 自动对暂存区文档跑 `audit-docs.mjs --staged`；配置库内提交加跑 `check-rules.mjs` 全套。
+- 安装：`git config --global core.hooksPath C:/Users/huang/.config/opencode/git-hooks`
+- 卸载：`git config --global --unset core.hooksPath`
+- 仓库级 `core.hooksPath`（如 husky）优先于全局；`--no-verify` 为单次逃生口。
+- 误报需要放行时，用行内 `docs-audit:allow`；全局卸载留给钩子故障等例外。
 
 ## 完成前门禁
 

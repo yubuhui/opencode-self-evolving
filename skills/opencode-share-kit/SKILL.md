@@ -15,7 +15,7 @@ description: "将 opencode 的自我进化/开发规范配置打包成可分享�
    - 检查 `node_modules/` 里是否有所声明插件的包。
    - 检查插件配置文件引用的 provider/model 在 `opencode.json` 是否真的定义（引用不存在的 provider = 死配置）。
    - 无效插件：删除 `opencode.json` 与 `tui.json` 里的 `"plugin": [...]` 声明，并可删插件 jsonc 与 agent-team/。
-3. **定分享范围**：核心系统 = auto-skill-creator + white-bear-safe-rules + 质量/规范类技能 + AGENTS.md + INDEX.md + `check-rules.mjs` + `audit-docs.mjs` + `test/`（`npm test` = 规则体检 L1-L4 + 单测）；领域专属技能（excel-vba、vbs 等）按需另打包。
+3. **定分享范围**：核心系统 = auto-skill-creator + white-bear-safe-rules + 质量/规范类技能 + AGENTS.md + INDEX.md + `check-rules.mjs` + `audit-docs.mjs` + `test/` + `git-hooks/` + `.gitattributes`（`npm test` = 规则体检 L1-L4 + 单测；git-hooks = 全局提交钩子）；领域专属技能（excel-vba、vbs 等）按需另打包。
 4. **清理悬空引用**：共享版技能里对不一起分享的技能名/文件的引用要删掉（保留规则本身）。
 5. **脱敏**：`opencode.json.example` 里所有 API Key 换占位符（`sk-`、`nvapi-`、`ctx7sk-` 全查），去掉真实 provider/baseURL。
 6. **写 README**：目录结构、安装步骤（install.ps1 + macOS/Linux 手动拷贝）、自我进化原理、自定义说明。
@@ -23,7 +23,8 @@ description: "将 opencode 的自我进化/开发规范配置打包成可分享�
 
 ## 关键命令 / 模式
 
-- 安装脚本：`Copy-Item AGENTS.md` + `skills/` 到 `$HOME/.config/opencode/`，opencode.json 已存在则跳过不覆盖；`check-rules.mjs`、`audit-docs.mjs`、`test/` 一并拷贝（配合 `package.json` 的 `npm test`）。
+- 安装脚本：`Copy-Item AGENTS.md` + `skills/` 到 `$HOME/.config/opencode/`，opencode.json 已存在则跳过不覆盖；`check-rules.mjs`、`audit-docs.mjs`、`test/`、`git-hooks/`、`.gitattributes` 一并拷贝（配合 `package.json` 的 `npm test`）。
+- 全局提交钩子：安装 `git config --global core.hooksPath <配置目录>/git-hooks`；卸载 `git config --global --unset core.hooksPath`；仓库级 hooksPath（husky 等）优先，`--no-verify` 单次跳过。
 - 分享后体检：`npm test`（规则体检 L1-L4 + 单测）与 `node audit-docs.mjs` 全 PASS 再发布。
 - 插件未加载判定：`Test-Path plugin`、`Get-ChildItem node_modules -Filter "*oh-my*"`、`rg "my-provider" *.jsonc`。
 - 密钥扫描：`rg -n "sk-[A-Za-z0-9]{20,}|nvapi-[A-Za-z0-9]{20,}|ctx7sk-[A-Za-z0-9]{20,}"`。

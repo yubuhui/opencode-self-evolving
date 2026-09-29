@@ -1,0 +1,46 @@
+#!/bin/sh
+# pre-commit (installed globally via core.hooksPath)
+# 1) audit staged docs with audit-docs.mjs --staged (block high-confidence tombstones)
+# 2) when committing inside the global config repo, also run check-rules.mjs (L1-L4)
+# fail-open: missing node or scripts => warn and allow (never brick other repos)
+HOOK_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+CFG_ROOT=$(CDPATH= cd -- "$HOOK_DIR/.." && pwd)
+if command -v cygpath >/dev/null 2>&1; then
+  AUDIT=$(cygpath -m "$CFG_ROOT/audit-docs.mjs")
+  CHECK=$(cygpath -m "$CFG_ROOT/check-rules.mjs")
+  CFG_ROOT=$(cygpath -m "$CFG_ROOT")
+else
+  AUDIT="$CFG_ROOT/audit-docs.mjs"
+  CHECK="$CFG_ROOT/check-rules.mjs"
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "[pre-commit] node not found; skipping docs audit." >&2
+  exit 0
+fi
+
+if [ -f "$AUDIT" ]; then
+  if ! node "$AUDIT" --staged; then
+    echo "[pre-commit] staged docs contain high-confidence tombstones." >&2
+    echo "[pre-commit] fix: delete, rewrite as 'pitfall -> current fix', or add docs-audit:allow inline." >&2
+    exit 1
+  fi
+else
+  echo "[pre-commit] audit-docs.mjs not found; skipping docs audit." >&2
+fi
+
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null | tr -d '\r')
+if [ -n "$ROOT" ] && [ -f "$CHECK" ]; then
+  if command -v cygpath >/dev/null 2>&1; then
+    ROOT=$(cygpath -m "$ROOT")
+  fi
+  R=$(printf '%s' "$ROOT" | tr 'A-Z' 'a-z')
+  C=$(printf '%s' "$CFG_ROOT" | tr 'A-Z' 'a-z')
+  if [ "$R" = "$C" ]; then
+    if ! node "$CHECK"; then
+      echo "[pre-commit] config repo check-rules.mjs failed (L1-L4)." >&2
+      exit 1
+    fi
+  fi
+fi
+exit 0
