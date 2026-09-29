@@ -1,5 +1,6 @@
 {
   "scripts": {
-    "test": "node check-rules.mjs"
+    "test": "node check-rules.mjs && node --test",
+    "audit": "node audit-docs.mjs"
   }
 }

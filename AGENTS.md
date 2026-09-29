@@ -56,6 +56,7 @@ description: "One-line description. Triggers: {keywords}"
 1. **过时检查**：改动涉及 页面/模块/命令/架构/红线 的，检查 AGENTS.md、AI-开发规范.md、`.opencode/skills/` 里的技能文档是否仍准确；不准确即改（SKILL.md 内容 + description 触发词 + INDEX.md 描述同步）。
 2. **冲突检查**：检查技能间冲突——`skills/` 目录 ↔ INDEX.md 双向一致性（L1，`npm test` 自动跑）、职责重叠（L2，description 触发词交集）、指令矛盾（L3，红线段落相斥）。
 3. **兜底补录**：即使旧技能没过时，学到的新踩坑/新命令/新模式仍按 create 流程补录；「技能已存在」不是跳过同步的理由。
+4. **改动后审计**：技能/规范改完跑 `npm test` 与 `node audit-docs.mjs --changed`，高置信墓碑命中清零后再提交（判级见 `docs-stale-audit`）。
 
 详见全局技能 `auto-skill-creator`。
 <!-- auto-skill-creator -->

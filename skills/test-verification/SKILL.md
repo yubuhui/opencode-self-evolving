@@ -30,6 +30,7 @@ description: "先探测项目测试栈，把每阶段落到可执行验证命令
 - 纯逻辑改动 → 对应单测（如 `npm test` 或 `test/x.test.mjs`）。
 - 前端页面 → 冒烟/渲染验证（有项目级 smoke 技能/脚本则引用）。
 - 涉 lint/type → `npm run lint` / `npm run typecheck`。
+- 文档/技能改动 → 文档审计：项目内 `node C:/Users/huang/.config/opencode/audit-docs.mjs --changed`；全局规则库 `npm test`（含 L4）；高置信命中清零才通过（判级见 `docs-stale-audit`）。
 
 命令要能判定成败（退出码/明确断言），不能是「我看一下」。
 

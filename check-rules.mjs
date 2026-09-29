@@ -1,12 +1,14 @@
 // check-rules.mjs — opencode 自我进化系统规则体检
-// 检查三项，任一失败退出码非 0：
+// 检查四项，任一失败退出码非 0：
 //   L1 索引一致性：skills/ 目录 <-> INDEX.md 双向一致（孤儿技能 / 悬空条目）
 //   L2 白熊安全   ：负面指令只允许出现在「红线兜底」节内，正文须正面引导（排除代码块/行内代码）
 //   L3 乱码检测   ：UTF-8-as-GBK 常见乱码签名零命中
+//   L4 文档审计   ：墓碑描述高置信零命中（复用 audit-docs.mjs 的 RULES/auditText）
 // 用法：node check-rules.mjs [目录]   （默认取脚本所在目录，即全局配置根）
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { auditText } from './audit-docs.mjs';
 
 const root = process.argv[2]
   ? path.resolve(process.argv[2])
@@ -80,6 +82,18 @@ for (const file of targets) {
   if (MOJIBAKE_RE.test(codeStrip(raw))) failures.push(`L3 乱码：${file} 命中乱码签名`);
 }
 
+// —— L4 文档审计（墓碑描述，复用 audit-docs.mjs）——
+let l4High = 0;
+let l4Candidates = 0;
+for (const file of targets) {
+  const audit = auditText(read(file));
+  l4Candidates += audit.candidates.length;
+  for (const h of audit.high) {
+    l4High += 1;
+    failures.push(`L4 墓碑描述：${file}:${h.line}「${h.word}」`);
+  }
+}
+
 // —— 输出 ——
 const w = (s, n) => s.padEnd(n, ' ');
 console.log(w('文件', 48) + w('负面', 6) + w('正面', 6) + ' 状态');
@@ -91,6 +105,7 @@ console.log('---');
 console.log(`L1 索引: ${orphans.length + dangling.length} 问题`);
 console.log(`L2 白熊: ${targets.length} 文件，正文负面 ${rows.reduce((a, r) => a + r.violations.length, 0)} 处`);
 console.log(`L3 乱码: 0 期望`);
+console.log(`L4 文档审计: ${l4High} 高置信 / ${l4Candidates} 复查候选`);
 if (failures.length) {
   console.log('FAILURES:');
   failures.forEach((f) => console.log('  - ' + f));
