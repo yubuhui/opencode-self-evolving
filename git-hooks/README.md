@@ -31,3 +31,7 @@ git config --global --unset core.hooksPath
 - 查看当前设置：`git config --global --get core.hooksPath`
 - 手动预检（在目标仓库内）：`git hook run pre-commit`
 - 临时放行误报：文档行内加 `docs-audit:allow`
+
+## 维护提示
+
+- `HOOK_DIR` / `CFG_ROOT` 比较前先用 `cd` 归一化：`cygpath -m` 只转换路径分隔符，路径里的 `..` 会原样保留，字符串直比会漏掉配置库联动；`test/git-hooks.test.mjs` 的「模拟配置库」用例已覆盖该回归。
