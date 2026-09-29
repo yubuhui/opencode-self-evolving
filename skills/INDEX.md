@@ -3,6 +3,7 @@
 | Skill | Description |
 |-------|-------------|
 | auto-skill-creator | Meta-skill: automatically create, update, and de-conflict reusable skills from experience |
+| docs-stale-audit | 文档/技能改动后的墓碑描述审计：audit-docs.mjs --changed/--staged 用法、判级、豁免与修复流程 |
 | opencode-share-kit | 将 opencode 自我进化/开发规范配置打包成可分享仓库（脱敏密钥 + 安装脚本 + README） |
 | phased-refactor-and-report | 大型改造分阶段实现/测试/git 提交 + 完成报告（原状/计划/实际/偏差原因/验收指引） |
 | plan-review | 大型任务先由子代理出《开发计划》落盘，主进程按硬清单复核通过才开工（不通过退回重出，上限2轮） |

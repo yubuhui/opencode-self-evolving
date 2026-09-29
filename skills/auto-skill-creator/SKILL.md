@@ -106,7 +106,7 @@ Skills go stale when the codebase moves. After a round of feature add/fix, check
 2. `rg` the affected paths/commands across `skills/`, `AGENTS.md`, and project docs to find referencing skills.
 3. For each hit, read the SKILL.md and update: content, `description` trigger keywords (add new ones), and `INDEX.md` row.
 4. If it's a project skill, check the project AGENTS.md / AI-开发规范.md references too.
-5. Keep INDEX.md in sync: every skill in `skills/` has a row, and every row points to an existing skill. Run `npm test` (runs `check-rules.mjs`) to auto-verify.
+5. Keep INDEX.md in sync: every skill in `skills/` has a row, and every row points to an existing skill. Run `npm test`（L1-L4 + 单测）与 `node audit-docs.mjs --changed` 验证，高置信命中清掉再提交（判级见 `docs-stale-audit`）。
 
 ## Skill Conflict Detection
 
@@ -124,19 +124,9 @@ Known L3 hotspots and the correct resolution:
 
 ## 文档只写现状与踩坑（`docs-current-state-only`）
 
-写技能 / 注释 / 规范时，一律只写**当前做法**；踩坑写成「曾经的坑 → 现修法」这种对当前代码仍有指导价值的形态。
+写技能 / 注释 / 规范时，一律只写**当前做法**；踩坑写成「曾经的坑 → 现修法」这种对当前代码仍有指导价值的形态（例：`--prop style=Heading1` 会静默失效 → 先查真实 styleId）。判定一句话：这段文字对**当前代码**有没有操作或避坑价值？没有就删。
 
-| 写什么 | 例子 |
-|--------|------|
-| 当前行为、当前 API / 参数 | 「常规修改默认 `edit_docx_review` 留 Word 修订」 |
-| 防回归的坑及其原因 | 「`--prop style=Heading1` 会静默失效 → 先查真实 styleId」 |
-| 复发性高的旧事物，重点写「怎么防」 | 「该坑在换模板后可能复发，判定方法是回读 styleId」 |
-
-**判定一句话**：这段文字对**当前代码**有没有操作或避坑价值？没有就删。
-
-配对的正面写法：坑的写法统一落到「曾经的坑 → 现修法」这个句式上，把「旧版长什么样」的篇幅让给「现在怎么做」。
-
-红线：已彻底删除的功能 / UI / 字段 / 命令，连同「旧版用 xx」「原来是…」「原实现…」这类墓碑描述一并删除（删除即删，不再留痕——留痕只增阅读成本与 token 消耗）。
+改动后的审计命令、判级与豁免细节见 `docs-stale-audit`；技能改动后的同步核对见下节工作流。
 
 ## 红线兜底
 
