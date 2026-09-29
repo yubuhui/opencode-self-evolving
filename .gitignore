@@ -11,3 +11,6 @@ service.json
 cli.json
 *.bak-*
 backup-*/
+
+# 任务计划（含「原状」叙述，本地留档不入库）
+plans/
