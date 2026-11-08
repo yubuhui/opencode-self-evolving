@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run self-check
+        run: npm test
+
+  test-install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run installer into sandbox HOME
+        run: |
+          export HOME="$RUNNER_TEMP/kit-home"
+          export XDG_CONFIG_HOME="$HOME/.config"
+          bash install.sh
+          echo "--- installed tree ---"
+          find "$HOME/.config/opencode" -maxdepth 2 2>&1 | sort
+          for f in AGENTS.md check-rules.mjs package.json opencode.json; do
+            test -f "$HOME/.config/opencode/$f" && echo "OK $f" || { echo "MISSING FILE $f"; exit 1; }
+          done
+          for d in auto-skill-creator plan-review; do
+            test -d "$HOME/.config/opencode/skills/$d" && echo "OK skills/$d" || { echo "MISSING DIR skills/$d"; exit 1; }
+          done
+          echo "install.sh OK"
+
