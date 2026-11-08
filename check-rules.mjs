@@ -67,6 +67,9 @@ const targets = [
   ...dirs.map((d) => path.join('skills', d, 'SKILL.md')),
 ];
 
+// 仓库内的 DSH 全局规则同样受白熊/乱码/墓碑约束（存在时纳入，CI 也能体检到）。
+if (fs.existsSync(path.join(root, 'dsh', 'AGENTS.md'))) targets.push(path.join('dsh', 'AGENTS.md'));
+
 // 默认根（本机规则库）体检时，把 DSH 用户级 AGENTS.md 一并纳入：
 // DSH 每轮加载 ~/.dsh/AGENTS.md，它与共享库 AGENTS.md 同受白熊/乱码/墓碑约束。
 // 传入显式根（测试或审计其他目录）时保持原行为。

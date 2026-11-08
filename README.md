@@ -55,6 +55,19 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 
 The kit installs into `~/.config/opencode/` (AGENTS.md + skills + a minimal `opencode.json` with destructive-command safety rules). **Your model / API key is configured through opencode itself** (`opencode auth login` or your own provider setup) — **this kit never touches it**. Then **restart opencode**.
 
+## Use with DeepSeek Harness (DSH)
+
+The same rules and skills work in DeepSeek Harness. DSH loads user-global instructions from `~/.dsh/AGENTS.md` and discovers skills from `~/.dsh/skills`, `~/.agents/skills`, and project `.dsh/skills`.
+
+1. Install the kit as above (it lands in `~/.config/opencode/`).
+2. Copy the DSH rules: `cp dsh/AGENTS.md ~/.dsh/AGENTS.md` (back up an existing file first). On Windows the target is `%USERPROFILE%\.dsh\AGENTS.md`.
+3. Point DSH at the shared library:
+   - macOS/Linux: `ln -s ~/.config/opencode/skills ~/.dsh/skills` and `ln -s ~/.config/opencode ~/.dsh/rules`
+   - Windows: `New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\skills" -Target "$env:USERPROFILE\.config\opencode\skills"` and the same for `rules` → `$env:USERPROFILE\.config\opencode`
+4. Start a new DSH session. `~/.dsh/AGENTS.md` is loaded every session, skills appear in the session catalog, and the rule self-check runs with `node ~/.dsh/rules/check-rules.mjs`.
+
+> DSH also supports project-level `.dsh/skills` and the shared `~/.agents/skills` root; the `SKILL.md` files here follow the same open format.
+
 ## Verify
 
 ```bash
@@ -110,6 +123,7 @@ opencode-self-evolving/
 │   ├── test-verification/          # 测试总控（界面/场景方法在 references/）
 │   ├── white-bear-safe-rules/      # 规则写作：白熊安全三原则
 │   └── powershell-utf8-safety/     # 写文件编码安全（防中文乱码）
+├── dsh/AGENTS.md                   # DSH 用户级全局规则（可选安装）
 ├── opencode.json.example           # 配置模板（密钥留空，需自己填）
 ├── install.sh                      # macOS/Linux 一行式安装（curl | bash）
 ├── install.ps1                     # Windows 一键安装
@@ -148,6 +162,19 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 4. 若无 `opencode.json` 则创建（**仅安全权限规则**）；已有则跳过，不覆盖你的配置。
 
 > **模型 / API key 由 opencode 自己配置**（`opencode auth login` 或你自己的 provider 设置），**本套件完全不涉及**。安装完成后**重启 opencode** 即生效。
+
+## DSH（DeepSeek Harness）支持
+
+同一套规则和技能也能用于 DSH。DSH 会加载用户级 `~/.dsh/AGENTS.md`，技能从 `~/.dsh/skills`、`~/.agents/skills` 和项目 `.dsh/skills` 发现。
+
+1. 先按上面的方式安装套件（落在 `~/.config/opencode/`）。
+2. 复制 DSH 规则：`cp dsh/AGENTS.md ~/.dsh/AGENTS.md`（已有文件先备份）；Windows 目标为 `%USERPROFILE%\.dsh\AGENTS.md`。
+3. 让 DSH 看到共享库：
+   - macOS/Linux：`ln -s ~/.config/opencode/skills ~/.dsh/skills`、`ln -s ~/.config/opencode ~/.dsh/rules`
+   - Windows：`New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\skills" -Target "$env:USERPROFILE\.config\opencode\skills"`；`rules` 同理指向 `$env:USERPROFILE\.config\opencode`
+4. 新开 DSH 会话：`~/.dsh/AGENTS.md` 每轮加载，技能出现在会话目录里；自检命令 `node ~/.dsh/rules/check-rules.mjs`。
+
+> DSH 也支持项目级 `.dsh/skills` 和共享根 `~/.agents/skills`，这里的 `SKILL.md` 采用同一开放格式，可直接复用。
 
 ## 体验「自我进化」
 
