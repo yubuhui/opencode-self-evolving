@@ -27,10 +27,14 @@ echo "Installed AGENTS.md"
 cp -r "$SRC/skills/." "$TARGET/skills/"
 echo "Installed skills/"
 
-# 3. self-check tooling (npm test runs check-rules.mjs)
+# 3. self-check tooling (npm test = check-rules L1-L4 + node --test)
 cp "$SRC/check-rules.mjs" "$TARGET/check-rules.mjs"
+cp "$SRC/audit-docs.mjs" "$TARGET/audit-docs.mjs"
+mkdir -p "$TARGET/test" "$TARGET/git-hooks"
+cp -r "$SRC/test/." "$TARGET/test/"
+cp -r "$SRC/git-hooks/." "$TARGET/git-hooks/"
 cp "$SRC/package.json" "$TARGET/package.json"
-echo "Installed self-check tooling (npm test)"
+echo "Installed self-check tooling (npm test); git-hooks copied but not enabled"
 
 # 4. opencode.json — safety permission rules only; never overwrite an existing config
 if [ ! -f "$TARGET/opencode.json" ]; then

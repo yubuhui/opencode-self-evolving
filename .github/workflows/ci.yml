@@ -33,11 +33,13 @@ jobs:
           bash install.sh
           echo "--- installed tree ---"
           find "$HOME/.config/opencode" -maxdepth 2 2>&1 | sort
-          for f in AGENTS.md check-rules.mjs package.json opencode.json; do
+          for f in AGENTS.md check-rules.mjs audit-docs.mjs package.json opencode.json; do
             test -f "$HOME/.config/opencode/$f" && echo "OK $f" || { echo "MISSING FILE $f"; exit 1; }
           done
-          for d in auto-skill-creator plan-review; do
-            test -d "$HOME/.config/opencode/skills/$d" && echo "OK skills/$d" || { echo "MISSING DIR skills/$d"; exit 1; }
+          for d in auto-skill-creator plan-review test-verification test git-hooks; do
+            test -d "$HOME/.config/opencode/$d" -o -d "$HOME/.config/opencode/skills/$d" && echo "OK dir $d" || { echo "MISSING DIR $d"; exit 1; }
           done
+          echo "--- installed kit self-check ---"
+          (cd "$HOME/.config/opencode" && npm test)
           echo "install.sh OK"
 

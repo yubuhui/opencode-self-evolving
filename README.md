@@ -58,7 +58,7 @@ The kit installs into `~/.config/opencode/` (AGENTS.md + skills + a minimal `ope
 ## Verify
 
 ```bash
-npm test   # runs check-rules.mjs: L1 index consistency, L2 white-bear rule-writing, L3 mojibake
+npm test   # check-rules.mjs: L1 index / L2 white-bear / L3 mojibake / L4 doc tombstones + node --test
 ```
 
 ## License
@@ -94,16 +94,20 @@ opencode 支持从全局配置目录加载 `skills/` 下的技能和 `AGENTS.md`
 
 ```
 opencode-self-evolving/
-├── AGENTS.md                       # 全局 always-on 指令（4 个核心块）
-├── check-rules.mjs                 # 规则体检脚本（L1/L2/L3，npm test 调用）
-├── package.json                    # npm test = node check-rules.mjs
+├── AGENTS.md                       # 全局 always-on 指令（6 个核心块）
+├── check-rules.mjs                 # 规则体检脚本（L1 索引 / L2 白熊 / L3 乱码 / L4 文档墓碑）
+├── audit-docs.mjs                  # 文档墓碑扫描器（--changed / --staged）
+├── package.json                    # npm test = check-rules (L1-L4) + node --test
+├── test/                           # 规则工具单测（node --test）
+├── git-hooks/                      # 可选：全局 pre-commit 文档审计（默认不启用）
 ├── skills/
 │   ├── INDEX.md                    # 技能索引
-│   ├── auto-skill-creator/         # ★ 自我进化核心：自动创建/更新/去冲突技能
+│   ├── auto-skill-creator/         # ★ 自我进化核心：自动创建/更新/合并技能
 │   ├── quality-baseline/           # 开发质量底线（五项互相约束）
+│   ├── docs-stale-audit/           # 改动后文档审计闭环
 │   ├── phased-refactor-and-report/ # 大型改造分阶段 + 完成报告
 │   ├── plan-review/                # 计划复核：子代理出计划 + 硬清单门禁
-│   ├── test-verification/          # 测试验证：探测测试栈 + 完成门禁
+│   ├── test-verification/          # 测试总控（界面/场景方法在 references/）
 │   ├── white-bear-safe-rules/      # 规则写作：白熊安全三原则
 │   └── powershell-utf8-safety/     # 写文件编码安全（防中文乱码）
 ├── opencode.json.example           # 配置模板（密钥留空，需自己填）
@@ -140,7 +144,7 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 脚本会：
 1. 拷贝 `AGENTS.md`（已有则先备份为 `.bak-时间戳`）。
 2. 拷贝 `skills/` 到 `~/.config/opencode/skills/`。
-3. 安装自检工具（`check-rules.mjs` + `package.json`，`npm test` 可自检）。
+3. 安装自检工具（`check-rules.mjs`、`audit-docs.mjs`、`test/`、`package.json`，`npm test` 可自检 L1-L4 + 单测）；`git-hooks/` 一并拷贝但默认不启用。
 4. 若无 `opencode.json` 则创建（**仅安全权限规则**）；已有则跳过，不覆盖你的配置。
 
 > **模型 / API key 由 opencode 自己配置**（`opencode auth login` 或你自己的 provider 设置），**本套件完全不涉及**。安装完成后**重启 opencode** 即生效。
