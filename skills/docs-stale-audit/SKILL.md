@@ -18,8 +18,8 @@ description: "文档/技能改动后的墓碑描述审计闭环：audit-docs.mjs
 ## 何时跑
 
 - 功能/修复收尾、文档或技能改动后、提交前（完成门禁的一部分）。
-- 项目内只覆盖本次改动：`node C:/Users/huang/.config/opencode/audit-docs.mjs --changed`
-- 全局规则库全量：`cd C:/Users/huang/.config/opencode && npm test`（含 L4 文档审计）
+- 项目内只覆盖本次改动：`node ~/.dsh/rules/audit-docs.mjs --changed`
+- 共享规则库全量：`node ~/.dsh/rules/check-rules.mjs` 与 `node ~/.dsh/rules/audit-docs.mjs`（DSH 经 `~/.dsh/rules` 目录联接访问，OpenCode 直接用 `~/.config/opencode/`，同一份实体）
 
 ## 判级速查
 
@@ -41,7 +41,7 @@ description: "文档/技能改动后的墓碑描述审计闭环：audit-docs.mjs
 ## git 钩子（全局安装）
 
 - 本机 `core.hooksPath` 指向配置库 `git-hooks/`，每次 `git commit` 自动对暂存区文档跑 `audit-docs.mjs --staged`；配置库内提交加跑 `check-rules.mjs` 全套。
-- 安装：`git config --global core.hooksPath C:/Users/huang/.config/opencode/git-hooks`
+- 安装：`git config --global core.hooksPath <规则库>/git-hooks`（本机 DSH `$env:USERPROFILE\.dsh\rules\git-hooks`；OpenCode `~/.config/opencode/git-hooks`，同一份）
 - 卸载：`git config --global --unset core.hooksPath`
 - 仓库级 `core.hooksPath`（如 husky）优先于全局；`--no-verify` 为单次逃生口。
 - 误报需要放行时，用行内 `docs-audit:allow`；全局卸载留给钩子故障等例外。

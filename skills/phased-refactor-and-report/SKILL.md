@@ -24,7 +24,7 @@ description: "大型改造分阶段实现、按风险验证、git 提交；完�
 
 ### 规划阶段（动手前先给计划）
 
-大型任务按 `plan-review` 技能走「子代理出计划 → 主进程复核通过 → 再执行」；本节拆分原则即 `plan-review` 复核清单 A 组的依据。小任务按下列步骤直接出计划即可。
+大型任务：DSH 下走原生 plan mode（`/plan` → `exit_plan_mode` 交用户审批）；改规则/技能体系时按 `plan-review` 走「子代理出计划 → 主代理复核通过 → 再执行」，本节拆分原则即其复核清单 A 组的依据。小任务按下列步骤直接出计划即可。
 
 1. 先完整分析现状，输出《改造计划》：整体目标 + 阶段拆分。
 2. 拆分原则：
@@ -67,7 +67,7 @@ description: "大型改造分阶段实现、按风险验证、git 提交；完�
 
 - 每阶段提交前执行直接相关检查和项目明确的必要门禁；lint/typecheck/test 按实际改动与门禁选择（入口查 AGENTS.md / 项目配置）。
 - 提交粒度：一阶段一 commit，commit message 带阶段标识。
-- 涉文档/技能改动：完成前跑文档审计（项目内 `node C:/Users/huang/.config/opencode/audit-docs.mjs --changed`；全局库 `npm test`），高置信命中清零并把结果写进报告「实际」列（判级见 `docs-stale-audit`）。
+- 涉文档/技能改动：完成前跑文档审计（项目内 `node ~/.dsh/rules/audit-docs.mjs --changed`；共享规则库 `node ~/.dsh/rules/check-rules.mjs`；DSH 经 `~/.dsh/rules` 联接，OpenCode 用 `~/.config/opencode/`），高置信命中清零并把结果写进报告「实际」列（判级见 `docs-stale-audit`）。
 - 回滚：`git log` 定位阶段 commit，`git revert <commit>` 精确回退单阶段。
 
 ## 红线兜底

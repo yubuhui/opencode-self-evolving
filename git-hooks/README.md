@@ -5,7 +5,7 @@
 ## 安装（一次性）
 
 ```sh
-git config --global core.hooksPath C:/Users/huang/.config/opencode/git-hooks
+git config --global core.hooksPath "$HOME/.config/opencode/git-hooks"   # Windows PowerShell: "$env:USERPROFILE\.config\opencode\git-hooks"
 ```
 
 ## 卸载

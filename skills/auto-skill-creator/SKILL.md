@@ -1,135 +1,103 @@
 ---
 name: auto-skill-creator
-description: "Automatically create, update, and de-conflict skills from experience. Triggers: whenever you learn something reusable, solve a non-trivial problem, discover a pattern, identify a repeatable workflow, or finish a round of feature add/fix and need to sync stale/conflicting skills. Runs continuously in the background."
+description: "任务内自我进化：把已验证、会复发的做法沉淀为 DSH 技能，更新过时条目并保持技能库精简。Triggers: 自我进化, 沉淀技能, 创建技能, 更新技能, 技能过时, 技能冲突, 技能合并, 技能库维护, 记录踩坑, 复用经验, DSH 技能, .dsh/skills"
 ---
 
-# Auto Skill Creator & Maintainer — Learn from Experience
-
-You are an always-active meta-skill. Your job is to watch what the agent does, create reusable skills from its experiences, and keep existing skills in sync with the codebase (update stale ones, detect conflicts).
-
-## When to Create a Skill
-
-Create a new SKILL.md in `.opencode/skills/{name}/` when any of these happen:
-
-| Trigger | Example |
-|---------|---------|
-| Solved a complex problem | Debugged a tricky concurrency issue |
-| Discovered a reusable pattern | Found a consistent way to handle auth |
-| Built a multi-step workflow | Manual steps that could be automated |
-| Learned project-specific knowledge | Architecture decisions, conventions |
-| Repeated a task 2+ times | Same commands/steps used again |
-| Found a useful tool/command | A CLI trick or API pattern worth saving |
-
-## Skill Format (template)
-
-```markdown
----
-name: {skill-name}
-description: "One-line description of what this skill does. Triggers: {keywords that activate this skill}"
----
-
-# {Skill Name}
+# 技能沉淀与维护（DSH 优先）
 
 <role>
-What this skill does and when to use it.
+把一次任务里验证过的做法变成下次可直接复用的技能，并让已有技能与当前代码保持同步。默认在一次任务内完成：任务结束前判断一次，有变更才落盘。
 </role>
 
-## Steps
+## 何时写
 
-{Numbered or structured steps}
+以下三条同时满足才写：
 
-## Key Commands / Patterns
+1. **已验证**：做法实际跑通，或坑已复现并修复；有命令、输出或数据可复核。
+2. **会复发**：同类任务、同类项目或同类平台问题还会再遇到。
+3. **未覆盖**：在技能库搜索后确认没有技能覆盖同一主题；已有相关技能就更新它。
 
-{Reusable commands, code snippets, or patterns}
+一次性任务、未验证推测、只对当前对话有意义的上下文留在交付说明里，不进技能库。
 
-## Notes / Pitfalls
+## 分类与落点
 
-{Things to watch out for, common mistakes}
-```
+先判断知识属于哪一类，再决定写到哪里：
 
-## Skill Storage Convention
+| 类型 | 判据 | 落点 |
+| --- | --- | --- |
+| 元技能/纪律 | 流程、写作语法、质量、测试、计划、审计等跨项目规则 | 全局 `~/.dsh/skills` |
+| 平台规则 | DSH/OpenCode/Windows/Git 等平台或工具知识，与具体代码库无关 | 全局 `~/.dsh/skills` |
+| 跨项目配方 | 可复用的任务操作手册（如 APK 下载核验），换项目仍成立 | 全局 `~/.dsh/skills` |
+| 方法细节 | 属于某个总控技能的分支方法（界面验证、场景设计等） | 该技能的 `references/*.md`，不单独建技能 |
+| 项目专属 | 某项目的库、构建链、业务规则、页面结构 | 项目 `.dsh/skills` |
+| 一次性经验 | 只在本次任务成立、未验证或不会复发 | 留在回复，不落盘 |
 
-先判断你运行在哪个 agent 下，再按对应一行取路径。两个 agent 的技能目录都采用 `<名称>/SKILL.md` 目录式布局。
+判断顺序：先看是否属于已有总控技能的方法细节（写 references），再看是否与具体项目绑定（项目级），最后才考虑全局技能。首次遇到、尚未复用的配方先留在回复；第二次复用或确认跨项目通用时再提升为全局技能。
 
-| agent | 项目级（默认） | 全局级 |
-|-------|----------------|--------|
-| OpenCode | `<project>/.opencode/skills/` | `~/.config/opencode/skills/` |
-| DeepSeek Harness (DSH) | `<project>/.dsh/skills/` | `~/.dsh/skills/` |
+## 写哪里（DSH 发现顺序）
 
-- **默认项目级**：绝大多数技能建在这里，只对该项目生效。
-- **全局级**：仅极少数通用技能放这里，对所有项目生效。
-- DSH 加载器认两种形态：目录式 `{名称}/SKILL.md`，或根目录下的扁平 `{名称}.md`。
-- DSH 要求 YAML frontmatter 同时具备 `name:` 与 `description:` 两个字段，两项齐备才生效，所以新建后务必回读确认。
-- Naming: kebab-case, descriptive
-- One skill per directory
-- Keep it focused — one skill = one purpose
+| 位置 | 路径 | 优先级 | 用途 |
+| --- | --- | --- | --- |
+| 项目 DSH | `<项目根>/.dsh/skills/<name>/SKILL.md` | 1 | 默认；项目专属知识 |
+| 项目共享 | `<项目根>/.agents/skills/` | 2 | 跨 agent 的项目技能 |
+| 用户 DSH | `~/.dsh/skills/<name>/SKILL.md` | 4 | 跨项目通用流程/平台规则 |
+| 用户共享 | `~/.agents/skills/` | 5 | 其他 agent 安装的技能 |
 
-> 两个 agent 的**项目级目录互不相通**（DSH 读 `.dsh/skills/`，不读 `.opencode/skills/`）。要在两个 agent 下都生效的项目技能，需在两边各放一份，并保持内容同步。
+- 项目根 = 最近的 `.git` 祖先目录；没有 `.git` 的临时目录以当前工作目录为根。
+- 同名技能按上表优先级取第一个。
+- `~/.dsh/skills` 是指向 `~/.config/opencode/skills` 的目录联接：写一次，DSH 与 OpenCode 都生效，无需另存副本。
+- DSH 项目级技能无需 `INDEX.md`；共享规则库（实体在 `~/.config/opencode/`）为 OpenCode 与 `check-rules` 维护 INDEX。
+- OpenCode 对应路径：项目 `<根>/.opencode/skills/`、用户 `~/.config/opencode/skills/`；两个 agent 的项目级目录互不相通，需要双端生效时各放一份。
 
-### 全局 vs 项目级 分流规则（铁律）
+## 怎么写
 
-- **默认项目级**：技能建在「学到它的当前项目」的项目级目录（按上表取当前 agent 的那一列）。项目专属的踩坑（某项目的库/构建链/脚本/产品特性）留在项目级。
-- **提升到全局**仅当满足其一：
-  - 通用纪律 / 红线 / 跨语言平台规则（如编码安全、质量底线、分阶段规范）
-  - 已在 **2+ 个互不相干**的项目实际复用
-- **恒全局**：元技能（auto-skill-creator 本身）与 always-on 纪律。
-- **迁移**：发现全局目录里有项目专属技能时，移到对应项目的项目级目录，并同步全局 INDEX 与该项目 INDEX。
-- **跨 agent 提升**：在 DSH 下提升全局技能时，按上表写入 `~/.dsh/skills/`；若该技能同时服务 OpenCode，再补一份到 `~/.config/opencode/skills/`，两处 INDEX.md 一并更新。
-  - 本机 `~/.dsh/skills` 是指向 `~/.config/opencode/skills` 的目录联接（junction），两处实为同一份文件，写入一次即两边生效。执行前先确认该联接仍在，再决定是否需要补写。
+frontmatter 必填两项：
 
-## Auto-Indexing
+- `name`：kebab-case，与目录名一致。
+- `description`：一句话说明 + `Triggers:` 关键词，供目录触发。DSH 只用目录里的 description 匹配，触发词写全。
 
-After creating a skill, add it to the current agent's project-level `INDEX.md` (i.e. `<project>/.opencode/skills/INDEX.md` for OpenCode, `<project>/.dsh/skills/INDEX.md` for DSH):
+可选字段：`whenToUse`（补充适用时机）、`disable-model-invocation: true`（仅用户可调用）、`user-invocable: false`（仅模型可调用）。缺 `name`/`description` 或名称不合法的文件会被 DSH 跳过。
+
+正文模板：
 
 ```markdown
-| Skill | Description |
-|-------|-------------|
-| {name} | {one-line description} |
+# 名称
+
+<role>一句话：解决什么问题、何时使用</role>
+
+## 适用条件
+
+## 步骤 / 命令
+
+## 失败征兆与处理
+
+## 验证方法
 ```
 
-全局库的 `INDEX.md` 同理维护（本机因目录联接，两侧为同一份文件）。
+- 写真实命令、路径、参数与预期输出；内容对准当前实现。
+- 表述遵循 `white-bear-safe-rules`：正面动作在前，被禁对象与检测签名集中在「检测签名」或「红线兜底」节。
+- 正文控制在一次能读完的长度；长细节放技能目录下的 `references/*.md`，正文按需指向。
 
-## When to Update an Existing Skill
+## 维护已有技能
 
-Skills go stale when the codebase moves. After a round of feature add/fix, check whether existing skills match current reality — **not just whether a skill is missing**:
+按改动触发检查，不例行全量扫描：
 
-| Trigger | What to check |
-|---------|---------------|
-| Page/module/lib/route added, renamed, or deleted | AGENTS.md file listings + architecture skills (e.g. file-management-architecture, embedded-doc-editor) reference the new paths |
-| Commands/build steps/ports/config changed | Skills recording them (offline-installer-build, lawyer-theme-color, headless-page-smoke-test) still accurate |
-| Architecture/conventions/red lines changed | Corresponding skills + project AGENTS.md / AI-开发规范.md references |
-| New pitfall/command/pattern learned | Even if no skill is stale, record it even when a similar skill already exists |
+- 技能里记录的文件、命令、配置、端口或架构发生变化。
+- 新发现推翻了技能里的做法。
+- 两个技能职责重叠：保留更通用的一个，另一个并入或改写成指向它。
+- 技能描述与内容不符：同步 `description` 与 INDEX 行。
+- 方法细节有增补：写进所属总控技能的 `references/*.md`（如界面验证 → `test-verification/references/ui-verification.md`），保持技能目录数量稳定。
 
-## Skill Update Workflow
+流程/元技能保持精简：新增前先找可合并项，合并或删除过时项后再新增；领域技能按真实经验增长。
 
-1. List files/commands/architecture touched by this change.
-2. `rg` the affected paths/commands across `skills/`, `AGENTS.md`, and project docs to find referencing skills.
-3. For each hit, read the SKILL.md and update: content, `description` trigger keywords (add new ones), and `INDEX.md` row.
-4. If it's a project skill, check the project AGENTS.md / AI-开发规范.md references too.
-5. Keep INDEX.md in sync: every skill in `skills/` has a row, and every row points to an existing skill. Run `npm test`（L1-L4 + 单测）与 `node audit-docs.mjs --changed` 验证，高置信命中清掉再提交（判级见 `docs-stale-audit`）。
+## 写完检查
 
-## Skill Conflict Detection
-
-Beyond staleness, verify skills stay conflict-free with each other. Three levels:
-
-| Level | Check | Method |
-|-------|-------|--------|
-| L1 索引一致性 | `skills/` dir ↔ INDEX.md bidirectional consistency (orphan/unregistered); AGENTS.md skill references exist | Automated: `npm test` runs `check-rules.mjs` (also checks white-bear rule-writing and mojibake) |
-| L2 职责重叠 | Two skills cover same domain (overlapping description trigger keywords) | `rg` trigger keywords across descriptions, judge whether to merge/split; common hotspots: file/档案/预览, loading/动画, 编码/写文件, 样式/组件 |
-| L3 指令矛盾 | One skill's red lines contradict another's (e.g. example uses a forbidden command) | `rg "禁止\|一律\|必须\|不得"` to extract red lines, manually scan for opposing pairs |
-
-Known L3 hotspots and the correct resolution:
-- 编码红线：示例命令一律用 Write/Edit 或 `[System.IO.File]::WriteAllText` 显式 UTF-8；被禁命令清单属检测信息，只在 `powershell-utf8-safety` 的「检测签名」节出现。`.vbs` 文件是明确豁免（须 GBK/ANSI）。
-- 图标/样式：图标走项目统一方案，样式走共享样式/CSS 变量，emoji 不作图标、样式不内联（见 quality-baseline + 项目 AGENTS.md 前端样式规范）。
-
-## 文档只写现状与踩坑（`docs-current-state-only`）
-
-写技能 / 注释 / 规范时，一律只写**当前做法**；踩坑写成「曾经的坑 → 现修法」这种对当前代码仍有指导价值的形态（例：`--prop style=Heading1` 会静默失效 → 先查真实 styleId）。判定一句话：这段文字对**当前代码**有没有操作或避坑价值？没有就删。
-
-改动后的审计命令、判级与豁免细节见 `docs-stale-audit`；技能改动后的同步核对见下节工作流。
+1. 回读 frontmatter 与正文，确认 `name` 与目录一致、中文无乱码。
+2. 运行规则体检：`node ~/.dsh/rules/check-rules.mjs`（DSH 经 `~/.dsh/rules` 联接访问；OpenCode 用 `~/.config/opencode/check-rules.mjs`）。
+3. 改动共享规则库时同步 `skills/INDEX.md`，再跑 `node ~/.dsh/rules/audit-docs.mjs --changed`。
 
 ## 红线兜底
 
-- 全局目录只收通用纪律/红线/跨语言平台规则或已在 2+ 个互不相干项目复用的技能；项目专属技能留在项目级目录（污染全局会稀释所有项目上下文与触发精度）。
-- 技能登记与目录保持一一对应：无孤儿技能（有目录无 INDEX 行）、无悬空条目（有 INDEX 行无目录）。
-- 技能文件一律落在上表列出的标准目录内（OpenCode `.opencode/skills/` · `~/.config/opencode/skills/`；DSH `.dsh/skills/` · `~/.dsh/skills/`），两个 agent 各按自己那两列读写。
+- 未验证、不可复现或只对当前对话有意义的内容留在回复里，不写成技能。
+- 技能写入前先搜索同名与同主题条目，避免重复与互相矛盾的指令。
+- 共享规则库的 INDEX 与目录保持一一对应；项目级 DSH 技能不需要 INDEX。

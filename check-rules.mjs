@@ -6,6 +6,7 @@
 //   L4 文档审计   ：墓碑描述高置信零命中（复用 audit-docs.mjs 的 RULES/auditText）
 // 用法：node check-rules.mjs [目录]   （默认取脚本所在目录，即全局配置根）
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { auditText } from './audit-docs.mjs';
@@ -32,7 +33,7 @@ const collect = (dir) => {
     .sort();
 };
 
-const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
+const read = (p) => fs.readFileSync(path.isAbsolute(p) ? p : path.join(root, p), 'utf8');
 
 const indexNames = (content) => {
   const names = [];
@@ -65,6 +66,18 @@ const targets = [
   path.join('skills', 'INDEX.md'),
   ...dirs.map((d) => path.join('skills', d, 'SKILL.md')),
 ];
+
+// 默认根（本机规则库）体检时，把 DSH 用户级 AGENTS.md 一并纳入：
+// DSH 每轮加载 ~/.dsh/AGENTS.md，它与共享库 AGENTS.md 同受白熊/乱码/墓碑约束。
+// 传入显式根（测试或审计其他目录）时保持原行为。
+if (process.argv[2] === undefined) {
+  const home = os.homedir();
+  const dshHome = process.env.DSH_HOME?.trim() || path.join(home, '.dsh');
+  const agentsHome = process.env.DSH_AGENTS_HOME?.trim() || path.join(home, '.agents');
+  for (const file of [path.join(dshHome, 'AGENTS.md'), path.join(agentsHome, 'AGENTS.md')]) {
+    if (fs.existsSync(file) && !targets.includes(file)) targets.push(file);
+  }
+}
 for (const file of targets) {
   const raw = read(file);
   const stripped = codeStrip(raw);
