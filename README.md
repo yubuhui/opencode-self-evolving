@@ -71,7 +71,7 @@ The same rules and skills work in DeepSeek Harness. DSH loads user-global instru
 ## Verify
 
 ```bash
-npm test   # check-rules.mjs: L1 index / L2 white-bear / L3 mojibake / L4 doc tombstones + node --test
+npm test   # check-rules.mjs: L1 index / L2 white-bear / L3 mojibake / L4 doc tombstones / L5 kind+budget + node --test
 ```
 
 ## License
@@ -108,9 +108,9 @@ opencode 支持从全局配置目录加载 `skills/` 下的技能和 `AGENTS.md`
 ```
 opencode-self-evolving/
 ├── AGENTS.md                       # 全局 always-on 指令（6 个核心块）
-├── check-rules.mjs                 # 规则体检脚本（L1 索引 / L2 白熊 / L3 乱码 / L4 文档墓碑）
+├── check-rules.mjs                 # 规则体检脚本（L1 索引 / L2 白熊 / L3 乱码 / L4 文档墓碑 / L5 结构预算）
 ├── audit-docs.mjs                  # 文档墓碑扫描器（--changed / --staged）
-├── package.json                    # npm test = check-rules (L1-L4) + node --test
+├── package.json                    # npm test = check-rules (L1-L5) + node --test
 ├── test/                           # 规则工具单测（node --test）
 ├── git-hooks/                      # 可选：全局 pre-commit 文档审计（默认不启用）
 ├── skills/
@@ -123,6 +123,8 @@ opencode-self-evolving/
 │   ├── test-verification/          # 测试总控（界面/场景方法在 references/）
 │   ├── white-bear-safe-rules/      # 规则写作：白熊安全三原则
 │   └── powershell-utf8-safety/     # 写文件编码安全（防中文乱码）
+├── env/                            # 环境档案（本机事实，本地留档不入库）
+├── archive/                        # 退役技能留档（本地留档不入库）
 ├── dsh/AGENTS.md                   # DSH 用户级全局规则（可选安装）
 ├── opencode.json.example           # 配置模板（密钥留空，需自己填）
 ├── install.sh                      # macOS/Linux 一行式安装（curl | bash）
@@ -158,7 +160,7 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 脚本会：
 1. 拷贝 `AGENTS.md`（已有则先备份为 `.bak-时间戳`）。
 2. 拷贝 `skills/` 到 `~/.config/opencode/skills/`。
-3. 安装自检工具（`check-rules.mjs`、`audit-docs.mjs`、`test/`、`package.json`，`npm test` 可自检 L1-L4 + 单测）；`git-hooks/` 一并拷贝但默认不启用。
+3. 安装自检工具（`check-rules.mjs`、`audit-docs.mjs`、`test/`、`package.json`，`npm test` 可自检 L1-L5 + 单测）；`git-hooks/` 一并拷贝但默认不启用。
 4. 若无 `opencode.json` 则创建（**仅安全权限规则**）；已有则跳过，不覆盖你的配置。
 
 > **模型 / API key 由 opencode 自己配置**（`opencode auth login` 或你自己的 provider 设置），**本套件完全不涉及**。安装完成后**重启 opencode** 即生效。

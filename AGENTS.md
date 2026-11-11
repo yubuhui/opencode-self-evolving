@@ -20,7 +20,7 @@ Create a new skill in `.opencode/skills/{name}/SKILL.md` whenever:
 2. Create `.opencode/skills/{kebab-case-name}/SKILL.md` following SKILL.md format
 3. Update `.opencode/skills/INDEX.md` with the new entry
 
-> **位置分流（铁律）**：项目级目录按当前 agent 取——OpenCode 用 `<project>/.opencode/skills/`，DeepSeek Harness 用 `<project>/.dsh/skills/`。通用纪律/红线/跨语言平台规则，或已在 2+ 个互不相干项目复用的技能，提升到全局（OpenCode `~/.config/opencode/skills/`，DSH `~/.dsh/skills/`）；项目专属踩坑（某项目的库/构建链/脚本）留在项目级。两个 agent 的项目级目录互不相通，需要双端生效时各放一份并保持同步。
+> **形态优先（铁律）**：先判知识形态，再判作用域。① 恒真纪律（流程、写作语法、质量、测试、计划、审计）→ `kind: discipline`，进共享库，全库上限 8 条；② 某类任务的可复用步骤 → `kind: runbook`，共享库或项目级均可，必填 `review-by`；③ 某台机器/某环境的现状事实 → `kind: inventory`，写 `<库>/env/<host-slug>.md`，不写成技能；④ 某项目的契约/结构/页面 → `kind: domain`，放项目级。项目级目录按当前 agent 取——OpenCode 用 `<project>/.opencode/skills/`，DeepSeek Harness 用 `<project>/.dsh/skills/`；两个 agent 的项目级目录互不相通，需要双端生效时各放一份并保持同步。description 预算与 `review-by` 由 `check-rules.mjs` 的 L5 与项目 `scripts/case-skills-check.js` 把关。
 
 ### Skill format
 

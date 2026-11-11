@@ -43,7 +43,7 @@ try {
   $hooksDst = Join-Path $target "git-hooks"; New-Item -ItemType Directory -Path $hooksDst -Force | Out-Null
   Copy-Item -Path (Join-Path $src.FullName "git-hooks\*") -Destination $hooksDst -Recurse -Force
   Copy-Item -LiteralPath (Join-Path $src.FullName "package.json") -Destination (Join-Path $target "package.json") -Force
-  Write-Host "已安装自检工具（npm test = L1-L4 + 单测）；git-hooks 已拷贝但默认不启用"
+  Write-Host "已安装自检工具（npm test = L1-L5 + 单测）；git-hooks 已拷贝但默认不启用"
 
   # 4. opencode.json（仅安全权限规则；已有则跳过）
   $cfg = Join-Path $target "opencode.json"

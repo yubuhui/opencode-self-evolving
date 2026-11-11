@@ -22,18 +22,17 @@ description: "任务内自我进化：把已验证、会复发的做法沉淀为
 
 ## 分类与落点
 
-先判断知识属于哪一类，再决定写到哪里：
+先判**知识形态**（它是什么），再判**作用域**（放哪）。形态决定该不该写成技能、预算多少、是否过期；作用域只决定放共享库还是项目根。
 
-| 类型 | 判据 | 落点 |
-| --- | --- | --- |
-| 元技能/纪律 | 流程、写作语法、质量、测试、计划、审计等跨项目规则 | 全局 `~/.dsh/skills` |
-| 平台规则 | DSH/OpenCode/Windows/Git 等平台或工具知识，与具体代码库无关 | 全局 `~/.dsh/skills` |
-| 跨项目配方 | 可复用的任务操作手册（如 APK 下载核验），换项目仍成立 | 全局 `~/.dsh/skills` |
-| 方法细节 | 属于某个总控技能的分支方法（界面验证、场景设计等） | 该技能的 `references/*.md`，不单独建技能 |
-| 项目专属 | 某项目的库、构建链、业务规则、页面结构 | 项目 `.dsh/skills` |
-| 一次性经验 | 只在本次任务成立、未验证或不会复发 | 留在回复，不落盘 |
+| kind | 中文 | 判据（它是什么） | 落点 | 预算 / 生命周期 |
+| --- | --- | --- | --- | --- |
+| `discipline` | 行为纪律 | 恒真的做事方式：流程、写作语法、质量、测试、计划、审计 | 共享库 `skills/` | ≤180 字符 / ≤12 关键词；常驻；不过期；全库上限 8 条 |
+| `runbook` | 操作规程 | 某类任务的可复用步骤：工具/平台坑、外部系统抓取、发布流程 | 共享库或项目 `skills/` | ≤240 / ≤15；常驻；必填 `review-by` |
+| `domain` | 领域契约 | 某项目/业务的契约、结构、模块与页面导航 | 项目 `.dsh/skills` | ≤320 / ≤25；常驻；必填 `review-by` |
+| `inventory` | 环境档案 | 某台机器/某环境的现状事实：版本、账户、落点、已装状态 | `<库>/env/<host-slug>.md`，**不是技能** | 不进 catalog；必填 `host` / `updated` / `review-by` |
+| 一次性 | — | 只在本次任务成立、未验证或不会复发 | 留在回复 | — |
 
-判断顺序：先看是否属于已有总控技能的方法细节（写 references），再看是否与具体项目绑定（项目级），最后才考虑全局技能。首次遇到、尚未复用的配方先留在回复；第二次复用或确认跨项目通用时再提升为全局技能。
+判断顺序：① 它教 agent 怎么干活、跨项目恒真吗（是→ `discipline`）；② 它是某类任务的办事步骤吗（是→ `runbook`）；③ 它只是本机/本环境现状吗（是→ `inventory` 档案）；④ 它是某项目的契约/结构吗（是→ `domain`）；都不符合就留在回复。方法细节写所属技能的 `references/*.md`，不单独建技能。`discipline` 维持上限 8 条：新增前先合并或归档一条。
 
 ## 写哪里（DSH 发现顺序）
 
@@ -52,12 +51,16 @@ description: "任务内自我进化：把已验证、会复发的做法沉淀为
 
 ## 怎么写
 
-frontmatter 必填两项：
+frontmatter 必填三项，`runbook` / `domain` 再加一项：
 
 - `name`：kebab-case，与目录名一致。
-- `description`：一句话说明 + `Triggers:` 关键词，供目录触发。DSH 只用目录里的 description 匹配，触发词写全。
+- `description`：**单行 + 双引号**，一句话说明 + `Triggers:` 段；DSH 只用它匹配，多行 YAML 会让整条技能被跳过。
+- `kind`：`discipline` / `runbook` / `domain`（环境事实用 `inventory` 写 `env/` 档案，不建技能）。
+- `review-by`：`runbook` / `domain` 必填，格式 `yyyy-mm-dd`，到期进「候选归档」。
 
-可选字段：`whenToUse`（补充适用时机）、`disable-model-invocation: true`（仅用户可调用）、`user-invocable: false`（仅模型可调用）。缺 `name`/`description` 或名称不合法的文件会被 DSH 跳过。
+description 预算（字符 = 整串含 `Triggers:`；关键词 = 触发段按逗号切分的项数）：`discipline` ≤180/≤12，`runbook` ≤240/≤15，`domain` ≤320/≤25；触发段名统一写 `Triggers:`。预算与取值由 `check-rules.mjs` 的 L5 把关。
+
+可选字段：`whenToUse`（补充适用时机）、`disable-model-invocation: true`（仅用户可调用）、`user-invocable: false`（仅模型可调用）。缺必填字段或名称不合法会被 DSH 跳过。
 
 正文模板：
 
@@ -86,16 +89,18 @@ frontmatter 必填两项：
 - 技能里记录的文件、命令、配置、端口或架构发生变化。
 - 新发现推翻了技能里的做法。
 - 两个技能职责重叠：保留更通用的一个，另一个并入或改写成指向它。
-- 技能描述与内容不符：同步 `description` 与 INDEX 行。
+- 技能描述与内容不符：同步 `description` 与 INDEX 行（INDEX 的 Kind 列与 frontmatter 保持一致）。
 - 方法细节有增补：写进所属总控技能的 `references/*.md`（如界面验证 → `test-verification/references/ui-verification.md`），保持技能目录数量稳定。
 
-流程/元技能保持精简：新增前先找可合并项，合并或删除过时项后再新增；领域技能按真实经验增长。
+**生命周期与归档**：`review-by` 到期时 `check-rules` 报「候选归档」，由人确认后执行——技能目录移到 `<库>/archive/<name>/`（在 `skills/` 之外，天然不被扫描）、从 `skills/INDEX.md` 删掉该行、在 `<库>/archive/INDEX.md` 记一行（名称 / 退役日期 / 原因）。`env/` 档案到期时更新字段与内容。
+
+流程/元技能保持精简：新增前先找可合并项，合并或删除过时项后再新增；`discipline` 满 8 条时先置换；领域技能按真实经验增长。
 
 ## 写完检查
 
-1. 回读 frontmatter 与正文，确认 `name` 与目录一致、中文无乱码。
-2. 运行规则体检：`node ~/.dsh/rules/check-rules.mjs`（DSH 经 `~/.dsh/rules` 联接访问；OpenCode 用 `~/.config/opencode/check-rules.mjs`）。
-3. 改动共享规则库时同步 `skills/INDEX.md`，再跑 `node ~/.dsh/rules/audit-docs.mjs --changed`。
+1. 回读 frontmatter 与正文：`name` 与目录一致、`kind` 与 `review-by` 齐全、`description` 单行且入预算、中文无乱码。
+2. 运行规则体检：`node ~/.dsh/rules/check-rules.mjs`（DSH 经 `~/.dsh/rules` 联接访问；OpenCode 用 `~/.config/opencode/check-rules.mjs`）；项目技能跑 `node scripts/case-skills-check.js`。
+3. 改动共享规则库时同步 `skills/INDEX.md`（含 Kind 列），再跑 `node ~/.dsh/rules/audit-docs.mjs --changed`。
 
 ## 红线兜底
 

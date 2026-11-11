@@ -6,14 +6,14 @@
 
 - DSH 在会话开始自动扫描技能并注入目录（名称 + description）；需要正文时用 `skill` 工具按名加载。技能文件按需读取，不必逐个加载。
 - 同名优先顺序：项目 `<根>/.dsh/skills` → 项目 `<根>/.agents/skills` → 自定义目录 → `~/.dsh/skills` → `~/.agents/skills` → DSH 内置技能；项目根为最近的 `.git` 祖先目录，没有 `.git` 时取当前目录。
-- 技能格式：目录式 `<name>/SKILL.md` 或扁平 `<name>.md`；frontmatter 必须含 `name`（kebab-case，与目录名一致）和 `description`；可选 `whenToUse`、`disable-model-invocation: true`、`user-invocable: false`。缺字段或名称不合法的技能会被 DSH 跳过。
+- 技能格式：目录式 `<name>/SKILL.md` 或扁平 `<name>.md`；frontmatter 必须含 `name`（kebab-case，与目录名一致）、`description`（单行、双引号、含 `Triggers:` 段）与 `kind`（`discipline` / `runbook` / `domain`；环境事实属 `inventory`，写 `env/<host-slug>.md` 而非技能）；`runbook` / `domain` 必填 `review-by`；可选 `whenToUse`、`disable-model-invocation: true`、`user-invocable: false`。description 按 kind 有字符与关键词预算，由 `check-rules.mjs` 的 L5 把关。缺字段或名称不合法的技能会被 DSH 跳过。
 - 共享技能库在 `~/.config/opencode/skills`，由 `dsh-library-skills` 插件注册为 DSH 原生技能源（custom rank 300），不再依赖 `~/.dsh/skills` 目录联接。DSH 项目级技能无需 `INDEX.md`；共享规则库为 OpenCode 与 `check-rules` 维护 INDEX。
 
 ## 二、自我进化（任务内沉淀）
 
 - 任务结束前判断一次：本次做法是否**已验证、会复发、现有技能未覆盖**。三条同时满足才写技能；否则保持现状，回复里不展开维护说明。
 - 写前先在技能库搜索同主题条目（命令、触发词、路径），优先更新或合并已有技能；每新增一个流程/元技能，先合并或删除一个过时项。领域技能按真实经验增长。
-- 知识归属：项目专属写入项目 `.dsh/skills`；跨项目通用流程、平台规则，或已在 2 个以上无关项目验证的内容写入 `~/.config/opencode/skills`（共享库，DSH 由 `dsh-library-skills` 插件读取）。
+- 知识归属：先判形态再判作用域——恒真纪律 → `kind: discipline`（共享库，上限 8 条）；可复用步骤 → `kind: runbook`；单机/单环境事实 → `kind: inventory`（写 `<库>/env/<host-slug>.md`，本地不入库）；项目契约/结构 → `kind: domain`（项目 `.dsh/skills`）。共享库为 `~/.config/opencode/skills`（DSH 由 `dsh-library-skills` 插件读取）。
 - 有变更时用一行说明「技能维护：新增/更新 X」；无变更不占篇幅。详细规则见 `auto-skill-creator`。
 
 ## 三、大型改动与计划
