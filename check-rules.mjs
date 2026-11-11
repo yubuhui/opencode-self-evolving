@@ -5,6 +5,8 @@
 //   L3 乱码检测   ：UTF-8-as-GBK 常见乱码签名零命中（含 env/*.md）
 //   L4 文档审计   ：墓碑描述高置信零命中（复用 audit-docs.mjs 的 RULES/auditText，含 env/*.md）
 //   L5 结构       ：kind 归属与取值、catalog 字符/关键词预算（含 whenToUse）、review-by 生命周期、env 档案字段、INDEX Kind 列
+//   L6 职责重叠   ：跨技能 Triggers 交集 ≥2 时提醒（人工判定合并或改写，不阻断）
+//   L7 红线相斥   ：不同技能「红线兜底」节对同一标识符一正一反时提醒（弱检测，不阻断）
 // 用法：node check-rules.mjs [目录]   （默认取脚本所在目录，即全局配置根）
 import fs from 'node:fs';
 import os from 'node:os';
@@ -253,6 +255,65 @@ for (const file of envFiles) {
   }
 }
 
+// —— L6 职责重叠候选：跨技能 Triggers 交集 ——
+const triggerList = (name) => {
+  const desc = field(frontmatter(read(path.join('skills', name, 'SKILL.md'))), 'description') ?? '';
+  const ti = desc.indexOf('Triggers:');
+  return ti < 0 ? [] : desc.slice(ti + 9).split(',').map((item) => item.trim()).filter(Boolean);
+};
+let l6Count = 0;
+const triggerMap = new Map(dirs.map((name) => [name, triggerList(name)]));
+for (let i = 0; i < dirs.length; i += 1) {
+  for (let j = i + 1; j < dirs.length; j += 1) {
+    const leftSet = new Set(triggerMap.get(dirs[i]).map((item) => item.toLowerCase()));
+    const shared = triggerMap.get(dirs[j]).filter((item) => leftSet.has(item.toLowerCase()));
+    if (shared.length >= 2) {
+      l6Count += 1;
+      warn(`L6 职责重叠候选：${dirs[i]} ↔ ${dirs[j]} 共享 ${shared.length} 个触发词（${shared.join(' | ')}），人工判定合并或改写`);
+    }
+  }
+}
+
+// —— L7 红线相斥候选（弱检测）：同一标识符在不同技能的红线节里一正一反 ——
+const REDLINE_RE = /##\s*(?:红线兜底|红线|注意事项（红线）)\s*\n([\s\S]*?)(?:\n##\s|$)/;
+const NEG_CLAUSE_RE = /不要|不得|禁止|绝不|别(?![人的])|\bnever\b|\bdon't\b|\bmust not\b|\bshould not\b/i;
+const TOKEN_RE = /`([^`]{2,40})`|([A-Za-z][A-Za-z0-9_.:\\/-]{2,})/g;
+
+const redlineClauses = (name) => {
+  const m = REDLINE_RE.exec(read(path.join('skills', name, 'SKILL.md')));
+  if (!m) return [];
+  return m[1]
+    .split(/\n+/)
+    .map((line) => line.replace(/^\s*[-*]\s*/, '').trim())
+    .filter((line) => line.length >= 8)
+    .map((text) => {
+      const tokens = new Set();
+      const re = new RegExp(TOKEN_RE.source, 'g');
+      let hit;
+      while ((hit = re.exec(text)) !== null) {
+        const token = (hit[1] ?? hit[2] ?? '').trim().toLowerCase();
+        if (token.length >= 3) tokens.add(token);
+      }
+      return { text, tokens, negative: NEG_CLAUSE_RE.test(text) };
+    });
+};
+
+let l7Count = 0;
+const redlineMap = new Map(dirs.map((name) => [name, redlineClauses(name)]));
+for (let i = 0; i < dirs.length; i += 1) {
+  for (let j = i + 1; j < dirs.length; j += 1) {
+    for (const leftClause of redlineMap.get(dirs[i])) {
+      for (const rightClause of redlineMap.get(dirs[j])) {
+        if (leftClause.negative === rightClause.negative) continue;
+        const sharedToken = [...leftClause.tokens].find((token) => rightClause.tokens.has(token));
+        if (sharedToken === undefined) continue;
+        l7Count += 1;
+        warn(`L7 红线相斥候选：${dirs[i]} 与 ${dirs[j]} 对 \`${sharedToken}\` 一正一反，人工判定（${dirs[i]}: ${leftClause.text.slice(0, 40)}… / ${dirs[j]}: ${rightClause.text.slice(0, 40)}…）`);
+      }
+    }
+  }
+}
+
 // DSH 用户级规则漂移：~/.dsh/AGENTS.md 是库内 dsh/AGENTS.md 的复制件（非链接）
 if (process.argv[2] === undefined) {
   const libraryCopy = path.join(root, 'dsh', 'AGENTS.md');
@@ -279,6 +340,8 @@ console.log(`L2 白熊: ${targets.length} 文件，正文负面 ${rows.reduce((a
 console.log(`L3 乱码: ${l3Hits} 命中 / ${l3Checked} 文件`);
 console.log(`L4 文档审计: ${l4High} 高置信 / ${l4Candidates} 复查候选`);
 console.log(`L5 结构: ${l5Problems} 问题`);
+console.log(`L6 职责重叠: ${l6Count} 组候选`);
+console.log(`L7 红线相斥: ${l7Count} 组候选`);
 if (warnings.length) {
   console.log(`提醒（不改退出码）:`);
   warnings.forEach((item) => console.log('  ! ' + item));
