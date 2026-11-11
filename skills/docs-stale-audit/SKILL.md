@@ -1,7 +1,7 @@
 ---
 name: docs-stale-audit
 kind: discipline
-description: "文档/技能改动后的墓碑描述审计闭环：audit-docs.mjs 的 --changed/--staged 用法、高置信与复查候选判级、docs-audit:allow 豁免、修复流程、git 钩子拦截。Triggers: 文档审计, 墓碑描述, 改动后审计, 过时描述, audit-docs, --changed, --staged, 复查候选, docs-audit:allow, 钩子拦截"
+description: "文档/技能改动后的墓碑描述审计：audit-docs 的 --changed/--staged、高置信与复查候选判级、docs-audit:allow 豁免与修复闭环。Triggers: 文档审计, 墓碑描述, 改动后审计, 过时描述, audit-docs, 复查候选, docs-audit:allow, 钩子拦截"
 ---
 
 # 文档墓碑描述审计（docs-current-state-only 闭环）

@@ -2,7 +2,7 @@
 name: dsh-turn-failure-diagnosis
 kind: runbook
 review-by: 2027-06-30
-description: "DeepSeek Harness 每轮立即失败（界面显示本轮运行失败）的定位与修复：解压 session.v4.jsonl.zstd 读 turn/end 错误，处理 unknown prompt variable（如 persona 里的 {{cwd}}）。Triggers: DeepSeek Harness, dsh, 本轮运行失败, 一直失败, unknown prompt variable, persona-suffix, {{cwd}}, session.v4.jsonl.zstd"
+description: "DeepSeek Harness「本轮运行失败」定位：解压 session.v4.jsonl.zstd 读 turn/end 错误，修 unknown prompt variable（如 persona 里的 {{cwd}}）。Triggers: DeepSeek Harness, dsh, 本轮运行失败, 一直失败, unknown prompt variable, persona-suffix, {{cwd}}, session.v4.jsonl.zstd"
 ---
 
 # DeepSeek Harness 每轮失败排查

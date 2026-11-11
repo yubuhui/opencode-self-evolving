@@ -2,7 +2,7 @@
 name: opencode-share-kit
 kind: runbook
 review-by: 2027-06-30
-description: "将 opencode 的自我进化/开发规范配置打包成可分享仓库（脱敏密钥 + 安装脚本 + README），并同步清理本地无效插件配置。触发词: 分享, 打包, 分发, 给别人的 opencode, 自我进化系统, 开发规范系统, 分享配置, opencode 插件未加载, 脱敏"
+description: "将 opencode 的自我进化/开发规范配置打包成可分享仓库（脱敏密钥 + 安装脚本 + README），并同步清理本地无效插件配置。Triggers: 分享, 打包, 分发, 给别人的 opencode, 自我进化系统, 开发规范系统, 分享配置, opencode 插件未加载, 脱敏"
 ---
 
 # OpenCode 配置打包分享

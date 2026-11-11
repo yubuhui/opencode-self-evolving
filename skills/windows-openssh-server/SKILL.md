@@ -2,7 +2,7 @@
 name: windows-openssh-server
 kind: runbook
 review-by: 2027-06-30
-description: 在 Windows 10/11（含家庭版）上把 OpenSSH 服务端真正跑起来并可从其它设备登录。覆盖：Add-WindowsCapability 报“没有注册类”(0x80040154) 时改用 DISM.exe；服务启动失败 WIN32_EXIT_CODE 1067 时按 SYSTEM 上下文排查主机密钥 ACL（“Permissions ... are too open” → “no hostkeys available -- exiting”）；服务路径不可用时改用计划任务 + .cmd wrapper 拉起 sshd -D -e；以及 PowerShell 里嵌套 cmd 重定向因二次转义而静默失效的坑。Triggers: OpenSSH, sshd, 安装SSH服务端, ssh连不上, 22端口监听, Add-WindowsCapability 没有注册类, 0x80040154, 服务1067, WIN32_EXIT_CODE 1067, sshd 意外停止, no hostkeys available, UNPROTECTED PRIVATE KEY FILE, Permissions are too open, 计划任务启动sshd, 微软账户SSH登录, ssh 密码填什么
+description: Windows 10/11（含家庭版）OpenSSH 服务端：DISM 绕开 0x80040154、1067 查主机密钥 ACL、计划任务+.cmd wrapper 拉起 sshd、端口与认证应答验证。指纹见 env/desktop-m9lqf60.md。Triggers: OpenSSH, sshd, 安装SSH服务端, ssh连不上, 0x80040154, 服务1067, no hostkeys available, 计划任务启动sshd, 微软账户SSH登录
 ---
 
 # Windows OpenSSH 服务端落地
@@ -10,7 +10,7 @@ description: 在 Windows 10/11（含家庭版）上把 OpenSSH 服务端真正�
 ## 适用条件
 
 - 目标是从另一台设备 `ssh user@局域网IP` 登录 Windows 主机，而不是本机当客户端。
-- 已验证环境：Windows 10 22H2 家庭中文版 19045、PowerShell 7.6.9、账户为 MicrosoftAccount 且属 Administrators。
+- 环境指纹：见库根 `env/desktop-m9lqf60.md`（Windows 版本、账户类型、sshd 与主机密钥落点、已装验证状态）。
 - 家庭版支持 `OpenSSH.Server` 能力，版本限制不是失败原因。
 
 ## 一、安装阶段
@@ -96,14 +96,14 @@ Start-ScheduledTask -TaskName 'OpenSSH Server (Logon)'
 Get-NetTCPConnection -LocalPort 22 -State Listen
 # 2) 真实应答 + 认证方式（BatchMode 必然失败，但失败信息就是证据）
 & 'C:\Windows\System32\OpenSSH\ssh.exe' -o BatchMode=yes -o StrictHostKeyChecking=no `
-    -o UserKnownHostsFile=NUL -o ConnectTimeout=5 'huang@192.168.0.101' 'echo ok'
+    -o UserKnownHostsFile=NUL -o ConnectTimeout=5 'user@192.168.1.10' 'echo ok'
 ```
 
 看到 `Permission denied (publickey,password,keyboard-interactive)` 即通过：**sshd 已应答且提供密码认证**（BatchMode 只是不交互）。看到 `Connection refused` 才是没通。
 
 ## 五、客户端填写与常见坑
 
-- 填三项：**局域网 IPv4**（如 `192.168.0.101`，取 WLAN 那块网卡；`192.168.56.x`/`198.18.x.x` 等虚拟网卡不用于局域网登录）、端口 `22`、用户名（本地账户名；微软账户先试账户名，失败再试邮箱全称）。
+- 填三项：**局域网 IPv4**（如 `192.168.1.10`，取 WLAN 那块网卡；`192.168.56.x`/`198.18.x.x` 等虚拟网卡不用于局域网登录）、端口 `22`、用户名（本地账户名；微软账户先试账户名，失败再试邮箱全称）。
 - **密码 = 微软账户密码**（`Get-LocalUser <name> | Select PrincipalSource` 显示 `MicrosoftAccount`）。开机 PIN、指纹、Windows Hello 都不参与 SSH。
 - MSA 账户常见 `get_passwd: lookup_sid() failed: 1332` 警告，前台运行时可忽略；若密码认证始终 `Permission denied`，改用公钥：管理员组账户的密钥要写进 `C:\ProgramData\ssh\administrators_authorized_keys`（`AuthorizedKeysFile` 的 `Match Group administrators` 分支），并确保该文件 ACL 仅 SYSTEM/Administrators 可写。
 - 客户端报 `Connection refused` 先查 `Get-NetTCPConnection -LocalPort 22 -State Listen`；服务/任务停止、端口未监听是首位原因，其次才是防火墙。
