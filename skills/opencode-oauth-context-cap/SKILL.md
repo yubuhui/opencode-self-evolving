@@ -1,5 +1,7 @@
 ---
 name: opencode-oauth-context-cap
+kind: runbook
+review-by: 2027-06-30
 description: "排查 OpenCode V2 ChatGPT OAuth 下 OpenAI 模型有效上下文被限制为 400k/272k；区分官方规格、客户端目录和实际端点能力。Triggers: GPT-6 Sol 百万上下文, 1M context, 上下文 54%, 400k, 272k, 自动压缩, ChatGPT OAuth, Codex OAuth, /api/model, limit.input, limit.context"
 ---
 

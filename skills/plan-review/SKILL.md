@@ -1,5 +1,6 @@
 ---
 name: plan-review
+kind: discipline
 description: "涉规范/红线/技能体系的改造由子代理出计划、主代理按硬清单复核；普通大型改造走 DSH 原生 plan mode（/plan → exit_plan_mode）。Triggers: 制定计划, 出计划, 复核计划, 计划审核, 计划把关, 子代理规划, 规划阶段, 计划制定规范, 测试计划复核, plan mode, exit_plan_mode"
 ---
 

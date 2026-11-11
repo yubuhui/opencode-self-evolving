@@ -1,5 +1,6 @@
 ---
 name: powershell-utf8-safety
+kind: discipline
 description: "写/改含中文文本文件一律用 Write/Edit 工具（UTF-8），命令行确需写文件时用显式 UTF-8 无 BOM 写入 API。Triggers: 乱码, 写文件, Set-Content, Out-File, UTF-8, BOM, 中文损坏, 读改写, 文件编码, 编码安全, 缺少.wxss, WXSS"
 ---
 

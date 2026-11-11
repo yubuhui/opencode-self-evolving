@@ -1,5 +1,6 @@
 ---
 name: white-bear-safe-rules
+kind: discipline
 description: "书写/改写规则（AGENTS.md、SKILL.md、开发规范）时遵循白熊安全三原则：禁令必配正面替代、行为指令与诊断信息分离、正面先行红线兜底。Triggers: 白熊, 白熊安全, 写规则, 改规则, 规范写作, 禁令, 负面指令, 红线, 规则评审, 规则改写, 正面替代"
 ---
 

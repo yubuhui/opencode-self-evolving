@@ -1,5 +1,7 @@
 ---
 name: git-branch-consolidation
+kind: runbook
+review-by: 2027-06-30
 description: "Git 分支合并/清理的安全流程：脏工作区下用 branch -f 快进而非 checkout+merge、先判定线性链与 worktree 占用、删 worktree 前验干净。Triggers: 合并分支, 合并到 main/master, 清理分支, 删除 worktree, git worktree remove, branch -f, 快进合并, fast-forward, 分支整理"
 ---
 

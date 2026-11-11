@@ -1,5 +1,6 @@
 ---
 name: phased-refactor-and-report
+kind: discipline
 description: "大型改造分阶段实现、按风险验证、git 提交；完成报告列原状/计划/实际/偏差原因/验收指引，并明确待人工体验项。Triggers: 大型改造, 重构, 大规模变更, 分阶段, 阶段测试, 阶段提交, 完成报告, 原状, 计划, 实际实现, 偏差原因, 验收指引, 用户操作, 回滚"
 ---
 

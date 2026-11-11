@@ -1,5 +1,7 @@
 ---
 name: windows-openssh-server
+kind: runbook
+review-by: 2027-06-30
 description: 在 Windows 10/11（含家庭版）上把 OpenSSH 服务端真正跑起来并可从其它设备登录。覆盖：Add-WindowsCapability 报“没有注册类”(0x80040154) 时改用 DISM.exe；服务启动失败 WIN32_EXIT_CODE 1067 时按 SYSTEM 上下文排查主机密钥 ACL（“Permissions ... are too open” → “no hostkeys available -- exiting”）；服务路径不可用时改用计划任务 + .cmd wrapper 拉起 sshd -D -e；以及 PowerShell 里嵌套 cmd 重定向因二次转义而静默失效的坑。Triggers: OpenSSH, sshd, 安装SSH服务端, ssh连不上, 22端口监听, Add-WindowsCapability 没有注册类, 0x80040154, 服务1067, WIN32_EXIT_CODE 1067, sshd 意外停止, no hostkeys available, UNPROTECTED PRIVATE KEY FILE, Permissions are too open, 计划任务启动sshd, 微软账户SSH登录, ssh 密码填什么
 ---
 

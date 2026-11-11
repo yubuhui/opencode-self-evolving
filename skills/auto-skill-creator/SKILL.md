@@ -1,5 +1,6 @@
 ---
 name: auto-skill-creator
+kind: discipline
 description: "任务内自我进化：把已验证、会复发的做法沉淀为 DSH 技能，更新过时条目并保持技能库精简。Triggers: 自我进化, 沉淀技能, 创建技能, 更新技能, 技能过时, 技能冲突, 技能合并, 技能库维护, 记录踩坑, 复用经验, DSH 技能, .dsh/skills"
 ---
 

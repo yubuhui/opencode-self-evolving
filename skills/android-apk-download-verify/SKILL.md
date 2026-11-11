@@ -1,5 +1,7 @@
 ---
 name: android-apk-download-verify
+kind: runbook
+review-by: 2027-06-30
 description: "下载安卓 APK（官网无直链时走应用商店/豌豆荚）并核验完整性：豌豆荚 /download/dot 302 拿 ucdl.25pp.com 直链，解析 AXML 得包名/版本，按 apksig 扁平 chunk 算法复核 v2 内容摘要 + openssl 验签。Triggers: 下载 APK, 安卓安装包, apk 直链, 应用商店下载, 豌豆荚, 校验 APK, v2 签名, 安装包完整性, apksig, apk 签名验证"
 ---
 
