@@ -2,7 +2,7 @@
 name: windows-openssh-server
 kind: runbook
 review-by: 2027-06-30
-description: Windows 10/11（含家庭版）OpenSSH 服务端：DISM 绕开 0x80040154、1067 查主机密钥 ACL、计划任务+.cmd wrapper 拉起 sshd、端口与认证应答验证。指纹见 env/desktop-m9lqf60.md。Triggers: OpenSSH, sshd, 安装SSH服务端, ssh连不上, 0x80040154, 服务1067, no hostkeys available, 计划任务启动sshd, 微软账户SSH登录
+description: Windows 10/11（含家庭版）OpenSSH 服务端：DISM 绕开 0x80040154、1067 查主机密钥 ACL、计划任务+.cmd wrapper 拉起 sshd、端口与认证应答验证。指纹见 env/{host}.md。Triggers: OpenSSH, sshd, 安装SSH服务端, ssh连不上, 0x80040154, 服务1067, no hostkeys available, 计划任务启动sshd, 微软账户SSH登录
 ---
 
 # Windows OpenSSH 服务端落地
@@ -10,7 +10,7 @@ description: Windows 10/11（含家庭版）OpenSSH 服务端：DISM 绕开 0x80
 ## 适用条件
 
 - 目标是从另一台设备 `ssh user@局域网IP` 登录 Windows 主机，而不是本机当客户端。
-- 环境指纹：见库根 `env/desktop-m9lqf60.md`（Windows 版本、账户类型、sshd 与主机密钥落点、已装验证状态）。
+- 环境指纹：见库根 `env/<host-slug>.md`（本机为 `env/desktop-m9lqf60.md`；该文件是本地留档、不入库），内容含 Windows 版本、账户类型、sshd 与主机密钥落点、已装验证状态。
 - 家庭版支持 `OpenSSH.Server` 能力，版本限制不是失败原因。
 
 ## 一、安装阶段
