@@ -1,9 +1,10 @@
 // check-rules.mjs — opencode 自我进化系统规则体检
-// 检查四项，任一失败退出码非 0：
+// 检查五项，任一失败退出码非 0：
 //   L1 索引一致性：skills/ 目录 <-> INDEX.md 双向一致（孤儿技能 / 悬空条目）
 //   L2 白熊安全   ：负面指令只允许出现在「红线兜底」节内，正文须正面引导（排除代码块/行内代码）
-//   L3 乱码检测   ：UTF-8-as-GBK 常见乱码签名零命中
-//   L4 文档审计   ：墓碑描述高置信零命中（复用 audit-docs.mjs 的 RULES/auditText）
+//   L3 乱码检测   ：UTF-8-as-GBK 常见乱码签名零命中（含 env/*.md）
+//   L4 文档审计   ：墓碑描述高置信零命中（复用 audit-docs.mjs 的 RULES/auditText，含 env/*.md）
+//   L5 结构       ：kind 归属与取值、catalog 字符/关键词预算、review-by 生命周期、env 档案字段、INDEX Kind 列
 // 用法：node check-rules.mjs [目录]   （默认取脚本所在目录，即全局配置根）
 import fs from 'node:fs';
 import os from 'node:os';
@@ -18,7 +19,18 @@ const root = process.argv[2]
 const NEG_RE = /禁止|不得|严禁|绝不允许|不要|\bnever\b|\bdon't\b|\bmust not\b|\bshould not\b|\bdo not\b/g;
 const POS_RE = /一律|应当|务必|先找|优先|先做|先拆|先列/g;
 const REDLINE_MARK = /##\s*(红线|红线兜底|注意事项（红线）)/g;
-const MOJIBAKE_RE = /锟斤拷|鎺掑|掑簭|缁撴|娴嬭|鐨勶|鍦ㄤ|鏄痯|镄勩|鍦ㄣ|U\+FFFD/g;
+// 无 /g：避免 .test() 的 lastIndex 跨文件残留导致隔文件漏报；\uFFFD 匹配真正的替换字符，不用字面量 "U+FFFD"。
+const MOJIBAKE_RE = /锟斤拷|鎺掑|搴|缁撴|娴嬭|鐨勶|鍦ㄤ|鏄痯|镄勩|鍦ㄣ|\uFFFD/;
+
+// L5：kind 归属与 catalog 预算（字符口径 = description 整串去引号；关键词口径 = Triggers 段按逗号切分）
+const KIND_CAP = {
+  discipline: { chars: 180, words: 12 },
+  runbook: { chars: 240, words: 15 },
+  domain: { chars: 320, words: 25 },
+};
+const SKILL_KINDS = new Set(['discipline', 'runbook', 'domain']);
+const DISCIPLINE_MAX = 8;
+const TOTAL_CHARS_WARN = 3000;
 
 const codeStrip = (s) =>
   s
@@ -44,7 +56,27 @@ const indexNames = (content) => {
   return names;
 };
 
+const frontmatter = (raw) => {
+  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw);
+  return m ? m[1] : '';
+};
+
+// 取单行字段值；剥掉首尾引号，与技能插件解析口径一致
+const field = (header, key) => {
+  const m = new RegExp(`(?:^|\\n)${key}:[ \\t]*(.*)`).exec(header);
+  if (!m) return undefined;
+  return m[1].trim().replace(/^["']|["']$/g, '');
+};
+
+const parseDate = (value) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value).trim());
+  if (!m) return undefined;
+  const t = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return Number.isFinite(t) ? t : undefined;
+};
+
 const failures = [];
+const warnings = [];
 const rows = [];
 
 const report = (file, neg, pos, violations) => {
@@ -59,6 +91,15 @@ const orphans = dirs.filter((d) => !idx.includes(d));
 const dangling = idx.filter((n) => !dirs.includes(n));
 orphans.forEach((o) => failures.push(`L1 孤儿技能：skills/${o} 无 INDEX 条目`));
 dangling.forEach((d) => failures.push(`L1 悬空条目：INDEX 含 ${d} 但无对应目录`));
+
+// env/ 环境档案（不是技能）：参与 L3/L4，且由 L5 校验字段
+const envDirAbs = path.join(root, 'env');
+const envFiles = fs.existsSync(envDirAbs)
+  ? fs
+      .readdirSync(envDirAbs, { withFileTypes: true })
+      .filter((e) => e.isFile() && e.name.endsWith('.md'))
+      .map((e) => path.join('env', e.name))
+  : [];
 
 // —— L2 白熊安全 ——
 const targets = [
@@ -93,20 +134,130 @@ for (const file of targets) {
 }
 
 // —— L3 乱码检测 ——
-for (const file of targets) {
-  const raw = read(file);
-  if (MOJIBAKE_RE.test(codeStrip(raw))) failures.push(`L3 乱码：${file} 命中乱码签名`);
+const docTargets = [...targets, ...envFiles];
+let l3Checked = 0;
+let l3Hits = 0;
+for (const file of docTargets) {
+  l3Checked += 1;
+  if (MOJIBAKE_RE.test(codeStrip(read(file)))) {
+    l3Hits += 1;
+    failures.push(`L3 乱码：${file} 命中乱码签名`);
+  }
 }
 
 // —— L4 文档审计（墓碑描述，复用 audit-docs.mjs）——
 let l4High = 0;
 let l4Candidates = 0;
-for (const file of targets) {
+for (const file of docTargets) {
   const audit = auditText(read(file));
   l4Candidates += audit.candidates.length;
   for (const h of audit.high) {
     l4High += 1;
     failures.push(`L4 墓碑描述：${file}:${h.line}「${h.word}」`);
+  }
+}
+
+// —— L5 结构：kind 归属 / catalog 预算 / review-by / env 档案 / INDEX Kind 列 ——
+let l5Problems = 0;
+const l5fail = (msg) => {
+  l5Problems += 1;
+  failures.push(`L5 ${msg}`);
+};
+const warn = (msg) => warnings.push(msg);
+
+const skillMeta = [];
+let totalChars = 0;
+for (const name of dirs) {
+  const file = path.join('skills', name, 'SKILL.md');
+  const header = frontmatter(read(file));
+  const kind = field(header, 'kind');
+  const reviewBy = field(header, 'review-by');
+  const desc = field(header, 'description');
+  skillMeta.push({ name, kind, reviewBy });
+
+  if (kind === undefined) l5fail(`缺少 kind：skills/${name}/SKILL.md（允许 discipline/runbook/domain）`);
+  else if (kind === 'inventory') l5fail(`inventory 不是技能：skills/${name}/SKILL.md 应移到 env/<host>.md`);
+  else if (!SKILL_KINDS.has(kind)) l5fail(`kind 取值非法「${kind}」：skills/${name}/SKILL.md`);
+
+  if (desc === undefined) {
+    l5fail(`缺少 description：skills/${name}/SKILL.md`);
+    continue;
+  }
+  totalChars += desc.length;
+  const ti = desc.indexOf('Triggers:');
+  if (ti < 0) l5fail(`触发段须命名为 Triggers:：skills/${name}/SKILL.md`);
+  const words = ti < 0 ? 0 : desc.slice(ti + 9).split(',').filter((w) => w.trim().length > 0).length;
+  const cap = KIND_CAP[kind];
+  if (cap) {
+    if (desc.length > cap.chars) l5fail(`catalog 超字符（${desc.length}>${cap.chars}）：skills/${name}/SKILL.md`);
+    if (words > cap.words) l5fail(`catalog 关键词超量（${words}>${cap.words}）：skills/${name}/SKILL.md`);
+  }
+
+  if (kind === 'runbook' || kind === 'domain') {
+    if (reviewBy === undefined) l5fail(`缺少 review-by：skills/${name}/SKILL.md`);
+    else if (parseDate(reviewBy) === undefined) l5fail(`review-by 须为 yyyy-mm-dd：skills/${name}/SKILL.md`);
+    else if (parseDate(reviewBy) < Date.now()) warn(`review-by 已过期，候选归档：skills/${name}（${reviewBy}）`);
+  }
+}
+
+// 插件会加载 skills/<name>.md 扁平技能，而索引与体检只认目录：统一要求目录形式
+for (const entry of fs.readdirSync(path.join(root, 'skills'), { withFileTypes: true })) {
+  if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'INDEX.md') {
+    l5fail(`技能须用目录形式：skills/${entry.name} → 改为 skills/<name>/SKILL.md`);
+  }
+}
+
+const disciplineCount = skillMeta.filter((s) => s.kind === 'discipline').length;
+if (disciplineCount > DISCIPLINE_MAX) {
+  l5fail(`discipline 超过上限 ${DISCIPLINE_MAX} 条（现 ${disciplineCount} 条）：先合并或归档再新增`);
+}
+
+if (totalChars > TOTAL_CHARS_WARN) warn(`catalog 合计 ${totalChars} 字符，超过告警线 ${TOTAL_CHARS_WARN}（逐条上限之和仍为准）`);
+
+// INDEX 的 Kind 列必须与 SKILL.md 的 kind 一致
+const indexContent = read(path.join('skills', 'INDEX.md'));
+for (const line of indexContent.split('\n')) {
+  const m = /^\|\s*([a-z0-9-]*[a-z][a-z0-9-]*)\s*\|(.*)$/.exec(line);
+  if (!m) continue;
+  const name = m[1];
+  const meta = skillMeta.find((s) => s.name === name);
+  if (meta === undefined) continue;
+  const cells = m[2].split('|').map((s) => s.trim());
+  while (cells.length > 0 && cells[cells.length - 1] === '') cells.pop();
+  if (cells.length < 2 || cells[0] === '') {
+    warn(`INDEX 缺少 Kind 列：${name}`);
+    continue;
+  }
+  if (cells[0] !== meta.kind) l5fail(`INDEX Kind 与技能不一致：${name}（INDEX=${cells[0]} SKILL=${meta.kind}）`);
+}
+
+// env/*.md：环境档案字段齐全，kind 固定 inventory
+for (const file of envFiles) {
+  const header = frontmatter(read(file));
+  if (field(header, 'kind') !== 'inventory') l5fail(`env 档案 kind 须为 inventory：${file}`);
+  for (const key of ['host', 'updated', 'review-by']) {
+    if (field(header, key) === undefined) l5fail(`env 档案缺 ${key}：${file}`);
+  }
+  const updated = field(header, 'updated');
+  const reviewBy = field(header, 'review-by');
+  if (updated !== undefined && parseDate(updated) === undefined) l5fail(`env updated 须为 yyyy-mm-dd：${file}`);
+  if (reviewBy !== undefined) {
+    const t = parseDate(reviewBy);
+    if (t === undefined) l5fail(`env review-by 须为 yyyy-mm-dd：${file}`);
+    else if (t < Date.now()) warn(`env review-by 已过期：${file}（${reviewBy}）`);
+  }
+}
+
+// DSH 用户级规则漂移：~/.dsh/AGENTS.md 是库内 dsh/AGENTS.md 的复制件（非链接）
+if (process.argv[2] === undefined) {
+  const libraryCopy = path.join(root, 'dsh', 'AGENTS.md');
+  const dshHome = process.env.DSH_HOME?.trim() || path.join(os.homedir(), '.dsh');
+  const installed = path.join(dshHome, 'AGENTS.md');
+  if (fs.existsSync(libraryCopy) && fs.existsSync(installed)) {
+    const normalize = (s) => s.replace(/\r\n/g, '\n');
+    if (normalize(fs.readFileSync(libraryCopy, 'utf8')) !== normalize(fs.readFileSync(installed, 'utf8'))) {
+      warn('DSH 用户级规则未同步：~/.dsh/AGENTS.md 与库内 dsh/AGENTS.md 内容不一致，重新复制一份');
+    }
   }
 }
 
@@ -120,8 +271,13 @@ for (const r of rows) {
 console.log('---');
 console.log(`L1 索引: ${orphans.length + dangling.length} 问题`);
 console.log(`L2 白熊: ${targets.length} 文件，正文负面 ${rows.reduce((a, r) => a + r.violations.length, 0)} 处`);
-console.log(`L3 乱码: 0 期望`);
+console.log(`L3 乱码: ${l3Hits} 命中 / ${l3Checked} 文件`);
 console.log(`L4 文档审计: ${l4High} 高置信 / ${l4Candidates} 复查候选`);
+console.log(`L5 结构: ${l5Problems} 问题`);
+if (warnings.length) {
+  console.log(`提醒（不改退出码）:`);
+  warnings.forEach((item) => console.log('  ! ' + item));
+}
 if (failures.length) {
   console.log('FAILURES:');
   failures.forEach((f) => console.log('  - ' + f));

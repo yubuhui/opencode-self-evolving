@@ -15,10 +15,10 @@ const buildRoot = (agents) => {
   const root = tmp();
   fs.writeFileSync(path.join(root, 'AGENTS.md'), agents, 'utf8');
   fs.mkdirSync(path.join(root, 'skills', 'demo'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'skills', 'INDEX.md'), '| demo | 演示技能 |\n', 'utf8');
+  fs.writeFileSync(path.join(root, 'skills', 'INDEX.md'), '| demo | runbook | 演示技能 |\n', 'utf8');
   fs.writeFileSync(
     path.join(root, 'skills', 'demo', 'SKILL.md'),
-    '---\nname: demo\ndescription: "演示。Triggers: 演示"\n---\n\n# Demo\n\n当前做法。\n',
+    '---\nname: demo\nkind: runbook\nreview-by: 2099-12-31\ndescription: "演示。Triggers: 演示"\n---\n\n# Demo\n\n当前做法。\n',
     'utf8',
   );
   return root;
