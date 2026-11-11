@@ -4,7 +4,7 @@
 //   L2 白熊安全   ：负面指令只允许出现在「红线兜底」节内，正文须正面引导（排除代码块/行内代码）
 //   L3 乱码检测   ：UTF-8-as-GBK 常见乱码签名零命中（含 env/*.md）
 //   L4 文档审计   ：墓碑描述高置信零命中（复用 audit-docs.mjs 的 RULES/auditText，含 env/*.md）
-//   L5 结构       ：kind 归属与取值、catalog 字符/关键词预算、review-by 生命周期、env 档案字段、INDEX Kind 列
+//   L5 结构       ：kind 归属与取值、catalog 字符/关键词预算（含 whenToUse）、review-by 生命周期、env 档案字段、INDEX Kind 列
 // 用法：node check-rules.mjs [目录]   （默认取脚本所在目录，即全局配置根）
 import fs from 'node:fs';
 import os from 'node:os';
@@ -184,6 +184,11 @@ for (const name of dirs) {
     continue;
   }
   totalChars += desc.length;
+  const whenToUse = field(header, 'whenToUse');
+  if (whenToUse !== undefined) {
+    totalChars += whenToUse.length;
+    if (whenToUse.length > 120) l5fail(`whenToUse 超字符（${whenToUse.length}>120）：skills/${name}/SKILL.md`);
+  }
   const ti = desc.indexOf('Triggers:');
   if (ti < 0) l5fail(`触发段须命名为 Triggers:：skills/${name}/SKILL.md`);
   const words = ti < 0 ? 0 : desc.slice(ti + 9).split(',').filter((w) => w.trim().length > 0).length;

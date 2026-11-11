@@ -115,6 +115,14 @@ test('L5：扁平技能文件、INDEX Kind 不一致、discipline 超上限均�
   assert.match(limit.stdout, /L5 discipline 超过上限 8 条/);
 });
 
+test('L5：whenToUse 超过 120 字符失败（DSH 会把它注入 catalog）', () => {
+  const longWhen = '很长的适用时机说明'.repeat(15);
+  const raw = `---\nname: demo\nkind: runbook\nreview-by: 2099-12-31\nwhenToUse: "${longWhen}"\ndescription: "演示。Triggers: 演示"\n---\n\n# Demo\n\n当前做法。\n`;
+  const r = run(makeRoot({ skills: { demo: raw } }));
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stdout, /L5 whenToUse 超字符/);
+});
+
 test('L5：INDEX 缺 Kind 列只提醒；env 档案字段与 kind 缺失失败', () => {
   const noColumn = run(makeRoot({ skills: { demo: skill() }, index: ['| demo | 演示 |'] }));
   assert.equal(noColumn.status, 0, noColumn.stdout + noColumn.stderr);
