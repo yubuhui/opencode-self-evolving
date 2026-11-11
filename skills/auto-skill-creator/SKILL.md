@@ -40,12 +40,12 @@ description: "任务内自我进化：把已验证、会复发的做法沉淀为
 | --- | --- | --- | --- |
 | 项目 DSH | `<项目根>/.dsh/skills/<name>/SKILL.md` | 1 | 默认；项目专属知识 |
 | 项目共享 | `<项目根>/.agents/skills/` | 2 | 跨 agent 的项目技能 |
-| 用户 DSH | `~/.dsh/skills/<name>/SKILL.md` | 4 | 跨项目通用流程/平台规则 |
+| 用户共享库 | `~/.config/opencode/skills/<name>/SKILL.md` | 3 | 跨项目通用流程/平台规则（DSH 经 `dsh-library-skills` 读取） |
 | 用户共享 | `~/.agents/skills/` | 5 | 其他 agent 安装的技能 |
 
 - 项目根 = 最近的 `.git` 祖先目录；没有 `.git` 的临时目录以当前工作目录为根。
 - 同名技能按上表优先级取第一个。
-- `~/.dsh/skills` 是指向 `~/.config/opencode/skills` 的目录联接：写一次，DSH 与 OpenCode 都生效，无需另存副本。
+- 共享库在 `~/.config/opencode/skills`：OpenCode 直接读取，DSH 由 `dsh-library-skills` 插件注册为技能源；写一次两边生效。
 - DSH 项目级技能无需 `INDEX.md`；共享规则库（实体在 `~/.config/opencode/`）为 OpenCode 与 `check-rules` 维护 INDEX。
 - OpenCode 对应路径：项目 `<根>/.opencode/skills/`、用户 `~/.config/opencode/skills/`；两个 agent 的项目级目录互不相通，需要双端生效时各放一份。
 
