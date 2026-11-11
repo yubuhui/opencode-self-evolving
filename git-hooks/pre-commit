@@ -1,7 +1,7 @@
 #!/bin/sh
 # pre-commit (installed globally via core.hooksPath)
 # 1) audit staged docs with audit-docs.mjs --staged (block high-confidence tombstones)
-# 2) when committing inside the global config repo, also run check-rules.mjs (L1-L5)
+# 2) when committing inside the global config repo, also run check-rules.mjs (L1-L7)
 # fail-open: missing node or scripts => warn and allow (never brick other repos)
 HOOK_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 # canonicalize via cd: cygpath -m keeps '..' unresolved and would break the root comparison
@@ -39,7 +39,7 @@ if [ -n "$ROOT" ] && [ -f "$CHECK" ]; then
   C=$(printf '%s' "$CFG_ROOT" | tr 'A-Z' 'a-z')
   if [ "$R" = "$C" ]; then
     if ! node "$CHECK"; then
-      echo "[pre-commit] config repo check-rules.mjs failed (L1-L5)." >&2
+      echo "[pre-commit] config repo check-rules.mjs failed (L1-L7)." >&2
       exit 1
     fi
   fi

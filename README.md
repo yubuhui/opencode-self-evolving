@@ -71,7 +71,7 @@ The same rules and skills work in DeepSeek Harness. DSH loads user-global instru
 ## Verify
 
 ```bash
-npm test   # check-rules.mjs: L1 index / L2 white-bear / L3 mojibake / L4 doc tombstones / L5 kind+budget + node --test
+npm test   # check-rules.mjs: L1 index / L2 white-bear / L3 mojibake / L4 doc tombstones / L5 kind+budget / L6 trigger overlap / L7 redline conflict + node --test
 ```
 
 ## License
@@ -88,7 +88,7 @@ MIT
 
 装上之后，opencode 会：
 - **自动学习**：每解决一个难题、踩过一个坑、发现一个可复用模式，自动沉淀为技能（skill）。
-- **自动维护**：技能与代码库同步更新、检测技能间冲突（索引一致 / 职责重叠 / 指令矛盾）。
+- **自动维护**：技能与代码库同步更新；索引一致、白熊写法、乱码、文档墓碑、kind 与 catalog 预算由 `npm test` 自动检查，触发词交集（职责重叠）与红线段落相斥给候选提醒、人工判定。
 - **自动遵循规范**：所有项目默认遵守质量底线、大型改造分阶段、写文件编码安全三条纪律。
 
 ## 它是什么
@@ -108,9 +108,9 @@ opencode 支持从全局配置目录加载 `skills/` 下的技能和 `AGENTS.md`
 ```
 opencode-self-evolving/
 ├── AGENTS.md                       # 全局 always-on 指令（6 个核心块）
-├── check-rules.mjs                 # 规则体检脚本（L1 索引 / L2 白熊 / L3 乱码 / L4 文档墓碑 / L5 结构预算）
+├── check-rules.mjs                 # 规则体检脚本（L1 索引 / L2 白熊 / L3 乱码 / L4 文档墓碑 / L5 结构预算 / L6 职责重叠 / L7 红线相斥）
 ├── audit-docs.mjs                  # 文档墓碑扫描器（--changed / --staged）
-├── package.json                    # npm test = check-rules (L1-L5) + node --test
+├── package.json                    # npm test = check-rules (L1-L7) + node --test
 ├── test/                           # 规则工具单测（node --test）
 ├── git-hooks/                      # 可选：全局 pre-commit 文档审计（默认不启用）
 ├── skills/
@@ -160,7 +160,7 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 脚本会：
 1. 拷贝 `AGENTS.md`（已有则先备份为 `.bak-时间戳`）。
 2. 拷贝 `skills/` 到 `~/.config/opencode/skills/`。
-3. 安装自检工具（`check-rules.mjs`、`audit-docs.mjs`、`test/`、`package.json`，`npm test` 可自检 L1-L5 + 单测）；`git-hooks/` 一并拷贝但默认不启用。
+3. 安装自检工具（`check-rules.mjs`、`audit-docs.mjs`、`test/`、`package.json`，`npm test` 可自检 L1-L7 + 单测）；`git-hooks/` 一并拷贝但默认不启用。
 4. 若无 `opencode.json` 则创建（**仅安全权限规则**）；已有则跳过，不覆盖你的配置。
 
 > **模型 / API key 由 opencode 自己配置**（`opencode auth login` 或你自己的 provider 设置），**本套件完全不涉及**。安装完成后**重启 opencode** 即生效。
@@ -190,7 +190,7 @@ iex (irm https://raw.githubusercontent.com/yubuhui/opencode-self-evolving/main/i
 
 | 技能 | 作用 |
 |------|------|
-| **auto-skill-creator** | 自我进化核心。何时建技能、怎么写、怎么同步过时技能、怎么检测冲突（索引一致/职责重叠/指令矛盾） |
+| **auto-skill-creator** | 自我进化核心。何时建技能、怎么写、怎么同步过时技能、怎么检测冲突（索引一致/白熊/乱码/墓碑/预算自动，触发词交集与红线相斥提醒后人工判定） |
 | **quality-baseline** | 五项质量底线：代码结构清晰 / 开发维护方便 / 界面外观统一 / 操作逻辑一致 / 动画效果合适。互相约束，禁止为单一项牺牲另一项 |
 | **phased-refactor-and-report** | 大型改造必须拆阶段（实现→测试→提交），失败可独立回滚；非平凡任务完成后必须报告 原状/计划/实际/偏差原因/验收指引（用户界面操作步骤） |
 | **plan-review** | 大型/涉规范任务先由子代理出《开发计划》并落盘，主进程按硬清单复核通过才开工（退回重出上限 2 轮） |

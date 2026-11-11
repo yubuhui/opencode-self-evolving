@@ -27,7 +27,7 @@ echo "Installed AGENTS.md"
 cp -r "$SRC/skills/." "$TARGET/skills/"
 echo "Installed skills/"
 
-# 3. self-check tooling (npm test = check-rules L1-L5 + node --test)
+# 3. self-check tooling (npm test = check-rules L1-L7 + node --test)
 cp "$SRC/check-rules.mjs" "$TARGET/check-rules.mjs"
 cp "$SRC/audit-docs.mjs" "$TARGET/audit-docs.mjs"
 mkdir -p "$TARGET/test" "$TARGET/git-hooks"
